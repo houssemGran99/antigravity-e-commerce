@@ -5,11 +5,18 @@ import ProductImage from '../../../components/ProductImage';
 // We use a simple fetch to get data
 
 async function getProduct(id) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://antigravity-e-commerce-uv1a.vercel.app';
+    const url = `${apiUrl}/api/products/${id}`;
+    console.log(`[ProductDetails] Fetching: ${url}`);
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`, { cache: 'no-store' });
-        if (!res.ok) return null;
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) {
+            console.error(`[ProductDetails] Failed to fetch: ${res.status} ${res.statusText}`);
+            return null;
+        }
         return res.json();
     } catch (e) {
+        console.error('[ProductDetails] Error:', e);
         return null;
     }
 }
@@ -19,7 +26,8 @@ async function getSimilarProducts(category, currentId) {
     try {
         // Handle if category is object or string ID
         const categoryId = category._id || category;
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?category=${categoryId}`, { cache: 'no-store' });
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://antigravity-e-commerce-uv1a.vercel.app';
+        const res = await fetch(`${apiUrl}/api/products?category=${categoryId}`, { cache: 'no-store' });
         if (!res.ok) return [];
         const products = await res.json();
         return products.filter(p => p._id !== currentId).slice(0, 4); // Limit to 4 similar items

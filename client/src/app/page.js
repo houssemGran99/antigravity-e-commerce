@@ -3,7 +3,8 @@ import ProductCard from '../components/ProductCard';
 
 async function getProducts() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products`, { cache: 'no-store' });
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://antigravity-e-commerce-uv1a.vercel.app';
+    const res = await fetch(`${apiUrl}/api/products`, { cache: 'no-store' });
     if (!res.ok) {
       throw new Error('Failed to fetch data');
     }
