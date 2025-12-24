@@ -1,0 +1,66 @@
+const express = require('express');
+const router = express.Router();
+const User = require('../models/User');
+const { protect, admin } = require('../middleware/authMiddleware');
+
+// @desc    Get all users
+// @route   GET /api/users
+// @access  Private/Admin
+router.get('/', protect, admin, async (req, res) => {
+    try {
+        const users = await User.find({});
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+// @access  Private
+router.put('/profile', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (user) {
+            user.name = req.body.name || user.name;
+            user.phone = req.body.phone || user.phone;
+
+            if (req.body.address) {
+                user.address = {
+                    street: req.body.address.street || user.address?.street,
+                    city: req.body.address.city || user.address?.city,
+                    postalCode: req.body.address.postalCode || user.address?.postalCode,
+                    country: req.body.address.country || user.address?.country
+                };
+            }
+
+            if (req.body.password) {
+                // Password hashing logic if implementing password change
+                // user.password = req.body.password
+            }
+
+            const updatedUser = await user.save();
+
+            res.json({
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                isAdmin: updatedUser.isAdmin,
+                phone: updatedUser.phone,
+                picture: updatedUser.picture,
+                address: updatedUser.address,
+                googleId: updatedUser.googleId,
+                token: req.headers.authorization.split(' ')[1] // Return generic or same token
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.error('Update Profile Error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+module.exports = router;
