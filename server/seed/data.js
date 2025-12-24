@@ -54,7 +54,7 @@ const seedData = async () => {
                 category: catMap['Cameras'],
                 price: 2199,
                 description: "A hybrid powerhouse featuring Phase Hybrid AF, advanced video specs, and unlimited 4K 60p recording. Perfect for content creators.",
-                imageUrl: "https://images.unsplash.com/photo-1624823183488-292193cb9c0c?q=80&w=1000&auto=format&fit=crop",
+                imageUrl: "https://m.media-amazon.com/images/I/714e7vyoWGL.jpg",
                 specs: { resolution: "24.2MP", video: "6K 30p / 4K 60p", sensor: "Full-Frame CMOS" },
                 inStock: 15
             },
@@ -64,7 +64,7 @@ const seedData = async () => {
                 category: catMap['Cameras'],
                 price: 2499,
                 description: "Versatile mirrorless camera with high-speed shooting up to 40fps and impressive low-light performance.",
-                imageUrl: "https://images.unsplash.com/photo-1616423664033-6351892fb6f4?q=80&w=1000&auto=format&fit=crop",
+                imageUrl: "https://m.media-amazon.com/images/I/61s5kI0U4cL._AC_UF894,1000_QL80_.jpg",
                 specs: { resolution: "24.2MP", video: "4K 60p", sensor: "Full-Frame CMOS" },
                 inStock: 8
             },
@@ -94,7 +94,7 @@ const seedData = async () => {
                 category: catMap['Cameras'],
                 price: 1999,
                 description: "Iconic retro design paired with advanced full-frame performance and EXPEED 7 processing.",
-                imageUrl: "https://images.unsplash.com/photo-1564466012491-55081997f27a?q=80&w=1000&auto=format&fit=crop",
+                imageUrl: "https://m.media-amazon.com/images/I/71UyMxdXNgL.jpg",
                 specs: { resolution: "24.5MP", video: "4K 60p", sensor: "Full-Frame CMOS" },
                 inStock: 12
             },
@@ -105,7 +105,7 @@ const seedData = async () => {
                 category: catMap['Drones'],
                 price: 2199,
                 description: "Triple-camera system with Hasselblad main camera for cinematic aerial photography.",
-                imageUrl: "https://images.unsplash.com/photo-1623173710787-8ccf3c834927?q=80&w=1000&auto=format&fit=crop",
+                imageUrl: "https://m.media-amazon.com/images/I/6189PdK3wKL._AC_UF350,350_QL80_.jpg",
                 specs: { resolution: "20MP", video: "5.1K 50p", sensor: "4/3 CMOS" },
                 inStock: 5
             },
@@ -127,7 +127,7 @@ const seedData = async () => {
                 category: catMap['Lenses'],
                 price: 1099,
                 description: "Flagship standard zoom lens designed for unmatched expressive performance.",
-                imageUrl: "https://images.unsplash.com/photo-1629832205541-118838d7ae64?q=80&w=1000&auto=format&fit=crop",
+                imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3d0KdaKLyyE8deSYrsnA3-Ajs9SH1I4u9LA&s",
                 specs: { resolution: "N/A", video: "N/A", sensor: "Full-Frame" },
                 inStock: 8
             },

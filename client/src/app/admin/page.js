@@ -9,6 +9,16 @@ const AdminDashboard = () => {
     const [products, setProducts] = useState([]);
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterCategory, setFilterCategory] = useState('');
+
+    const categories = [...new Set(products.map(p => p.category?.name || 'Uncategorized'))].sort();
+
+    const filteredProducts = products.filter(product => {
+        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = filterCategory ? (product.category?.name || 'Uncategorized') === filterCategory : true;
+        return matchesSearch && matchesCategory;
+    });
 
     useEffect(() => {
         fetchData();
@@ -143,6 +153,26 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                    <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="bg-dark-800 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors flex-1"
+                    />
+                    <select
+                        value={filterCategory}
+                        onChange={(e) => setFilterCategory(e.target.value)}
+                        className="bg-dark-800 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-primary transition-colors md:w-64"
+                    >
+                        <option value="">All Categories</option>
+                        {categories.map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                    </select>
+                </div>
+
                 <div className="bg-dark-800 rounded-2xl border border-white/5 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-gray-400">
@@ -155,7 +185,7 @@ const AdminDashboard = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
-                                {products.map((product) => (
+                                {filteredProducts.map((product) => (
                                     <tr key={product._id} className="hover:bg-white/5 transition-colors">
                                         <td className="p-6 flex items-center gap-4">
                                             <div className="w-16 h-16 rounded-lg overflow-hidden bg-dark-900 border border-white/5">

@@ -4,9 +4,11 @@ import React, { useContext } from 'react';
 import Link from 'next/link';
 import { ShoppingBag } from 'lucide-react';
 import { CartState } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 const ProductCard = ({ product }) => {
     const { addToCart } = useContext(CartState);
+    const { user } = useAuth();
 
     return (
         <div className="group relative bg-dark-800 rounded-2xl overflow-hidden border border-white/5 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10">
@@ -34,12 +36,14 @@ const ProductCard = ({ product }) => {
                     <Link href={`/product/${product._id}`} className="flex-1 text-center bg-white/5 hover:bg-white/10 py-2 rounded-lg text-sm font-medium transition-colors text-white">
                         View Details
                     </Link>
-                    <button
-                        onClick={() => addToCart(product)}
-                        className="bg-primary hover:bg-blue-600 text-white p-2 rounded-lg transition-colors cursor-pointer"
-                    >
-                        <ShoppingBag className="w-5 h-5" />
-                    </button>
+                    {!user?.isAdmin && (
+                        <button
+                            onClick={() => addToCart(product)}
+                            className="bg-primary hover:bg-blue-600 text-white p-2 rounded-lg transition-colors cursor-pointer"
+                        >
+                            <ShoppingBag className="w-5 h-5" />
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

@@ -2,10 +2,14 @@
 
 import React, { useContext, useState } from 'react';
 import { CartState } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 const AddToCartButton = ({ product }) => {
     const { addToCart } = useContext(CartState);
+    const { user } = useAuth();
     const [added, setAdded] = useState(false);
+
+    if (user?.isAdmin) return null;
 
     const handleAddToCart = () => {
         addToCart(product);

@@ -41,9 +41,7 @@ const Navbar = () => {
                                 </>
                             )}
 
-                            {!user?.isAdmin && (
-                                <Link href="/about" className="text-gray-300 hover:text-primary transition-colors px-3 py-2 rounded-md font-medium">About</Link>
-                            )}
+
 
                             {!user?.isAdmin && (
                                 <form onSubmit={handleSearch} className="relative">
