@@ -6,7 +6,7 @@ import ProductImage from '../../../components/ProductImage';
 
 async function getProduct(id) {
     try {
-        const res = await fetch(`http://localhost:5000/api/products/${id}`, { cache: 'no-store' });
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/${id}`, { cache: 'no-store' });
         if (!res.ok) return null;
         return res.json();
     } catch (e) {
@@ -19,7 +19,7 @@ async function getSimilarProducts(category, currentId) {
     try {
         // Handle if category is object or string ID
         const categoryId = category._id || category;
-        const res = await fetch(`http://localhost:5000/api/products?category=${categoryId}`, { cache: 'no-store' });
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products?category=${categoryId}`, { cache: 'no-store' });
         if (!res.ok) return [];
         const products = await res.json();
         return products.filter(p => p._id !== currentId).slice(0, 4); // Limit to 4 similar items

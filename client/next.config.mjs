@@ -4,11 +4,11 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:5000/api/:path*',
+        destination: 'https://antigravity-e-commerce-uv1a.vercel.app/api/:path*',
       },
       {
         source: '/uploads/:path*',
-        destination: 'http://localhost:5000/uploads/:path*',
+        destination: 'https://antigravity-e-commerce-uv1a.vercel.app/uploads/:path*',
       },
     ];
   },
