@@ -1,68 +1,106 @@
-# Camera Shop
+# Lumière Camera Shop
 
-A modern e-commerce web application for selling cameras. Built with a React frontend and Node.js/Express backend.
+A premium e-commerce web application designed for photography enthusiasts. Lumière offers a curated selection of high-end cameras, lenses, and accessories with a stunning, modern user interface.
 
-## Tech Stack
+## ✨ Features
 
-- **Frontend:** React, Vite, TailwindCSS, Lucide React
-- **Backend:** Node.js, Express, MongoDB
-- **Database:** MongoDB
+### Client (Storefront)
+- **Modern UI/UX**: Built with a dark-themed, premium aesthetic using TailwindCSS.
+- **Product Browsing**: View featured products, search by name, and browse by category.
+- **Product Details**: High-quality images, detailed specs, and similar product recommendations.
+- **Shopping Cart**: Fully functional cart with persistent state.
+- **Authentication**: Secure Google Login integration for users.
+- **Profile Management**: View order history and user details.
 
-## Prerequisites
+### Admin Dashboard
+- **Analytics**: Visual charts for inventory status and order statistics.
+- **Product Management**: Add, edit, and delete products easily.
+- **Filtering**: Real-time product filtering by category and search terms for efficient management.
+- **Security**: Protected routes ensuring only admins can access sensitive features.
 
-- [Node.js](https://nodejs.org/) (v16 or higher recommended)
+## 🛠 Tech Stack
+
+### Frontend
+- **Framework**: [Next.js](https://nextjs.org/) (React)
+- **Styling**: TailwindCSS, CSS Modules
+- **Icons**: Lucide React
+- **Charts**: Recharts
+- **State Management**: React Context API
+
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MongoDB (Mongoose ODM)
+- **Authentication**: Google Auth Library & JWT
+
+## 🚀 Getting Started
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18+ recommended)
 - [MongoDB](https://www.mongodb.com/) installed and running locally
 
-## Getting Started
+### 1. Database & Server Setup
 
-Follow these steps to set up and run the application.
-
-### 1. Database Setup
-
-Ensure your local MongoDB instance is running. The application connects to `mongodb://localhost:27017/camera_shop`.
-
-### 2. Server Setup
-
-The server currently requires manual dependency installation as there is no `package.json` yet.
+Navigate to the server directory and install dependencies:
 
 ```bash
 cd server
-npm init -y
-npm install express mongoose dotenv cors
+npm install
 ```
 
-Create a `.env` file in the `server` directory with your MongoDB connection string:
+Create a `.env` file in the `server` directory:
 
 ```env
-MONGO_URI=your_mongodb_connection_string
+MONGO_URI=mongodb://localhost:27017/camera_shop
 PORT=5000
+JWT_SECRET=your_super_secret_key_here
+GOOGLE_CLIENT_ID=your_google_client_id_here
 ```
 
-### 3. Client Setup
+**Seed the Database:**
+Populate your local database with initial product data:
 
-Navigate to the client directory and install dependencies.
+```bash
+npm run seed
+```
+
+**Start the Server:**
+
+```bash
+npm run dev
+# Server runs on http://localhost:5000
+```
+
+### 2. Client Setup
+
+Navigate to the client directory and install dependencies:
 
 ```bash
 cd client
 npm install
 ```
 
-## Running the Application
+Create a `.env.local` file in the `client` directory:
 
-You will need to run the server and client in separate terminal windows.
-
-**Start the Server:**
-
-```bash
-cd server
-node index.js
-# Server runs on http://localhost:5000
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id_here
 ```
 
 **Start the Client:**
 
 ```bash
-cd client
 npm run dev
-# Client typically runs on http://localhost:5173
+# Application runs on http://localhost:3000
 ```
+
+## 🔐 Admin Access
+
+To access the admin dashboard:
+1. Log in with a Google account.
+2. Manually update your user document in MongoDB to set `isAdmin: true`.
+3. Navigate to `/admin` or click the Admin Dashboard link in the profile menu.
+
+## 📄 License
+
+This project is licensed under the ISC License.
