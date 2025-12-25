@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag, Camera, Menu, Search } from 'lucide-react';
@@ -35,7 +35,9 @@ const Navbar = () => {
 
 
                             {!user?.isAdmin && (
-                                <SearchForm />
+                                <Suspense fallback={<div className="w-48" />}>
+                                    <SearchForm />
+                                </Suspense>
                             )}
                         </div>
                     </div>
