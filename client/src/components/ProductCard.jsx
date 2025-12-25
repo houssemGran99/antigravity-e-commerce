@@ -27,7 +27,7 @@ const ProductCard = ({ product }) => {
                         <p className="text-sm text-primary font-medium">{product.brand?.name || product.brand || 'Brand'}</p>
                         <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors">{product.name}</h3>
                     </div>
-                    <span className="bg-white/10 px-2 py-1 rounded text-sm font-semibold text-white">${product.price}</span>
+                    <span className="bg-white/10 px-2 py-1 rounded text-sm font-semibold text-white">{product.price} TND</span>
                 </div>
 
                 <p className="text-gray-400 text-sm mb-4 line-clamp-2">{product.description}</p>

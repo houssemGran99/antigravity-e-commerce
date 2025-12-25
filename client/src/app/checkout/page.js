@@ -195,7 +195,7 @@ const CheckoutContent = () => {
                                     <img src={item.imageUrl} alt={item.name} className="w-16 h-16 object-cover rounded-lg border border-white/10" />
                                     <div className="flex-1">
                                         <h3 className="text-white font-bold">{item.name}</h3>
-                                        <p className="text-gray-400">${item.price}</p>
+                                        <p className="text-gray-400">{item.price} TND</p>
                                     </div>
                                 </div>
                             ))}
@@ -203,19 +203,19 @@ const CheckoutContent = () => {
                         <div className="border-t border-white/10 pt-4 space-y-2">
                             <div className="flex justify-between text-gray-400">
                                 <span>Items</span>
-                                <span>${itemsPrice.toFixed(2)}</span>
+                                <span>{itemsPrice.toFixed(2)} TND</span>
                             </div>
                             <div className="flex justify-between text-gray-400">
                                 <span>Shipping</span>
-                                <span>{shippingPrice === 0 ? 'Free' : `$${shippingPrice}`}</span>
+                                <span>{shippingPrice === 0 ? 'Free' : `${shippingPrice} TND`}</span>
                             </div>
                             <div className="flex justify-between text-gray-400">
                                 <span>Tax (15%)</span>
-                                <span>${taxPrice.toFixed(2)}</span>
+                                <span>{taxPrice.toFixed(2)} TND</span>
                             </div>
                             <div className="flex justify-between text-white font-bold text-xl pt-4 border-t border-white/10">
                                 <span>Total</span>
-                                <span>${totalPrice.toFixed(2)}</span>
+                                <span>{totalPrice.toFixed(2)} TND</span>
                             </div>
                         </div>
                     </div>

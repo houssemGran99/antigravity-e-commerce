@@ -163,6 +163,7 @@ const ProfileContent = () => {
                                         <img
                                             src={user.picture}
                                             alt={user.name}
+                                            referrerPolicy="no-referrer"
                                             className="w-32 h-32 rounded-full border-4 border-primary/20"
                                         />
                                         <div>
@@ -282,7 +283,7 @@ const ProfileContent = () => {
                                                                 <span className="text-gray-500 mr-2">{item.qty}x</span>
                                                                 {item.name}
                                                             </span>
-                                                            <span className="text-gray-400">${item.price}</span>
+                                                            <span className="text-gray-400">{item.price} TND</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -290,7 +291,7 @@ const ProfileContent = () => {
                                                 <div className="border-t border-white/10 pt-4 flex justify-between items-center">
                                                     <span className="text-gray-400 text-sm">Total Amount</span>
                                                     <div className="flex items-center gap-4">
-                                                        <span className="text-white font-bold text-lg">${order.totalPrice.toFixed(2)}</span>
+                                                        <span className="text-white font-bold text-lg">{order.totalPrice.toFixed(2)} TND</span>
                                                         {!order.isCancelled && !order.isDelivered && (
                                                             <button
                                                                 onClick={() => initiateCancel(order._id)}

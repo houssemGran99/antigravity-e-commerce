@@ -2,7 +2,7 @@
 
 import React, { useContext, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag, Camera, Menu, Search } from 'lucide-react';
 import { CartState } from '../context/CartContext';
 import { GoogleLogin } from '@react-oauth/google';
@@ -11,15 +11,6 @@ import { useAuth } from '../context/AuthContext';
 const Navbar = () => {
     const { cart } = useContext(CartState);
     const { user, login, logout } = useAuth();
-    const router = useRouter();
-    const [searchTerm, setSearchTerm] = useState('');
-
-    const handleSearch = (e) => {
-        e.preventDefault();
-        if (searchTerm.trim()) {
-            router.push(`/shop?search=${encodeURIComponent(searchTerm)}`);
-        }
-    };
 
     return (
         <nav className="sticky top-0 z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/10">
@@ -44,17 +35,7 @@ const Navbar = () => {
 
 
                             {!user?.isAdmin && (
-                                <form onSubmit={handleSearch} className="relative">
-                                    <input
-                                        name="search"
-                                        type="text"
-                                        placeholder="Search cameras..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="bg-dark-800 border border-white/10 rounded-full py-1.5 px-4 pl-10 text-sm focus:outline-none focus:border-primary w-48 transition-all focus:w-64 text-white placeholder-gray-500"
-                                    />
-                                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                </form>
+                                <SearchForm />
                             )}
                         </div>
                     </div>
@@ -64,7 +45,12 @@ const Navbar = () => {
                             <div className="flex items-center gap-3">
                                 <Link href="/profile" className="flex items-center gap-3 hover:bg-white/5 p-1.5 rounded-full pr-4 transition-colors group">
                                     {/* Using standard img to avoid next/image config issues for external google urls initially */}
-                                    <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full border border-white/20 group-hover:border-primary transition-colors" />
+                                    <img
+                                        src={user.picture}
+                                        alt={user.name}
+                                        referrerPolicy="no-referrer"
+                                        className="w-8 h-8 rounded-full border border-white/20 group-hover:border-primary transition-colors"
+                                    />
                                     <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">{user.name}</span>
                                 </Link>
                                 <button onClick={logout} className="text-sm text-gray-400 hover:text-white transition-colors ml-2">Logout</button>
@@ -106,3 +92,38 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+const SearchForm = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        const current = new URLSearchParams(Array.from(searchParams.entries()));
+
+        if (searchTerm.trim()) {
+            current.set('search', searchTerm);
+        } else {
+            current.delete('search');
+        }
+
+        const search = current.toString();
+        const query = search ? `?${search}` : "";
+        router.push(`/shop${query}`);
+    };
+
+    return (
+        <form onSubmit={handleSearch} className="relative">
+            <input
+                name="search"
+                type="text"
+                placeholder="Search cameras..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-dark-800 border border-white/10 rounded-full py-1.5 px-4 pl-10 text-sm focus:outline-none focus:border-primary w-48 transition-all focus:w-64 text-white placeholder-gray-500"
+            />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        </form>
+    );
+};

@@ -97,14 +97,36 @@ router.put('/:id/cancel', protect, async (req, res) => {
 // @desc    Update order to delivered
 // @route   PUT /api/orders/:id/deliver
 // @access  Private/Admin
+const sendEmail = require('../utils/sendEmail');
+
+// ... (existing imports)
+
+// @desc    Update order to delivered
+// @route   PUT /api/orders/:id/deliver
+// @access  Private/Admin
 router.put('/:id/deliver', protect, admin, async (req, res) => {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id).populate('user', 'name email');
 
     if (order) {
         order.isDelivered = true;
         order.deliveredAt = Date.now();
 
         const updatedOrder = await order.save();
+
+        // Send email
+        try {
+            console.log(`[Order Deliver] Attempting to send email to ${order.user.email} for order ${order._id}`);
+            await sendEmail({
+                email: order.user.email,
+                subject: 'Your Order Has Been Shipped! - Lumière',
+                message: `Hello ${order.user.name},\n\nWe are excited to let you know that your order ${order._id} has been approved and shipped! \n\nThank you for shopping with us.\n\nBest regards,\nThe Lumière Team`
+            });
+            console.log('[Order Deliver] Email sent successfully');
+        } catch (error) {
+            console.error('[Order Deliver] Failed to send email:', error);
+            // We don't want to fail the request if email fails, just log it
+        }
+
         res.json(updatedOrder);
     } else {
         res.status(404).json({ message: 'Order not found' });

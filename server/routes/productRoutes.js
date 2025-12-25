@@ -53,11 +53,24 @@ const Product = require('../models/Product');
 // GET all products with filtering
 router.get('/', async (req, res) => {
     try {
-        const { category, brand } = req.query;
+        const { category, brand, search } = req.query;
         let query = {};
 
         if (category) query.category = category;
         if (brand) query.brand = brand;
+        if (search) {
+            query.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        if (search) {
+            query.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } }
+            ];
+        }
 
         const products = await Product.find(query)
             .populate('category', 'name')

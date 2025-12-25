@@ -62,7 +62,7 @@ const CartPage = () => {
                                     <p className="text-sm text-primary font-medium">{item.brand?.name || item.brand}</p>
                                     <h3 className="text-xl font-bold truncate">{item.name}</h3>
                                     <p className="text-gray-400 text-sm mt-1 mb-2 line-clamp-1">{item.description}</p>
-                                    <p className="text-lg font-bold">${item.price}</p>
+                                    <p className="text-lg font-bold">{item.price} TND</p>
                                 </div>
                                 <button
                                     onClick={() => removeFromCart(item)}
@@ -83,7 +83,7 @@ const CartPage = () => {
                             <div className="space-y-4 mb-6">
                                 <div className="flex justify-between text-gray-400">
                                     <span>Subtotal</span>
-                                    <span>${total.toFixed(2)}</span>
+                                    <span>{total.toFixed(2)} TND</span>
                                 </div>
                                 <div className="flex justify-between text-gray-400">
                                     <span>Shipping</span>
@@ -91,12 +91,12 @@ const CartPage = () => {
                                 </div>
                                 <div className="flex justify-between text-gray-400">
                                     <span>Tax (Estimated)</span>
-                                    <span>${(total * 0.08).toFixed(2)}</span>
+                                    <span>{(total * 0.08).toFixed(2)} TND</span>
                                 </div>
                                 <div className="h-px bg-white/10 my-4"></div>
                                 <div className="flex justify-between text-xl font-bold text-white">
                                     <span>Total</span>
-                                    <span>${(total * 1.08).toFixed(2)}</span>
+                                    <span>{(total * 1.08).toFixed(2)} TND</span>
                                 </div>
                             </div>
 

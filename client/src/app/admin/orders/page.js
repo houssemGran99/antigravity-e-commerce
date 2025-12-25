@@ -106,7 +106,7 @@ const AdminOrders = () => {
                                             <td className="p-4 text-white font-medium">{order.user?.name || 'Unknown User'}</td>
                                             <td className="p-4 text-gray-400">{order.shippingAddress?.phone || 'N/A'}</td>
                                             <td className="p-4 text-gray-400">{new Date(order.createdAt).toLocaleDateString()}</td>
-                                            <td className="p-4 text-white font-bold">${order.totalPrice.toFixed(2)}</td>
+                                            <td className="p-4 text-white font-bold">{order.totalPrice.toFixed(2)} TND</td>
                                             <td className="p-4">
                                                 {order.isPaid ? (
                                                     <span className="text-green-500 flex items-center gap-1 font-medium text-sm">

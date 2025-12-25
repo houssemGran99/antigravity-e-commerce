@@ -50,6 +50,10 @@ app.get('/api-docs.json', (req, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Middleware
+app.use((req, res, next) => {
+    console.log(`[API Request] ${req.method} ${req.url}`);
+    next();
+});
 app.use(express.json());
 app.use(cors());
 

@@ -71,7 +71,7 @@ export default async function ProductPage({ params }) {
                         <div className="mb-6">
                             <h2 className="text-primary font-bold tracking-wide uppercase mb-2">{product.brand?.name || product.brand}</h2>
                             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{product.name}</h1>
-                            <p className="text-3xl text-white font-light">${product.price}</p>
+                            <p className="text-3xl text-white font-light">{product.price} TND</p>
                         </div>
 
                         <p className="text-gray-400 text-lg mb-8 leading-relaxed">

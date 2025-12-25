@@ -182,7 +182,7 @@ export default function AdminProductForm({ productId }) {
                         {/* Price & Category */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-gray-400 mb-2 text-sm font-medium">Price ($)</label>
+                                <label className="block text-gray-400 mb-2 text-sm font-medium">Price (TND)</label>
                                 <input
                                     type="number"
                                     name="price"

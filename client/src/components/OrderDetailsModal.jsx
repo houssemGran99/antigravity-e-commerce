@@ -21,6 +21,9 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                 const updatedOrder = await res.json();
                 if (onOrderUpdated) onOrderUpdated(updatedOrder);
                 onClose(); // Close modal to refresh or update local state if passed
+            } else {
+                console.error('Failed to deliver order:', res.status, res.statusText);
+                alert(`Failed to update order: ${res.status}`);
             }
         } catch (error) {
             console.error('Error delivering order:', error);
@@ -137,8 +140,8 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                                                 </div>
                                             </td>
                                             <td className="p-3 text-center text-gray-300">x{item.qty}</td>
-                                            <td className="p-3 text-right text-gray-300">${item.price}</td>
-                                            <td className="p-3 text-right text-white font-bold">${(item.price * item.qty).toFixed(2)}</td>
+                                            <td className="p-3 text-right text-gray-300">{item.price} TND</td>
+                                            <td className="p-3 text-right text-white font-bold">{(item.price * item.qty).toFixed(2)} TND</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -152,19 +155,19 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                             <div className="w-full md:w-1/2 space-y-2">
                                 <div className="flex justify-between text-gray-400">
                                     <span>Subtotal</span>
-                                    <span>${(order.itemsPrice || 0).toFixed(2)}</span>
+                                    <span>{(order.itemsPrice || 0).toFixed(2)} TND</span>
                                 </div>
                                 <div className="flex justify-between text-gray-400">
                                     <span>Shipping</span>
-                                    <span>{order.shippingPrice === 0 ? 'Free' : `$${(order.shippingPrice || 0).toFixed(2)}`}</span>
+                                    <span>{order.shippingPrice === 0 ? 'Free' : `${(order.shippingPrice || 0).toFixed(2)} TND`}</span>
                                 </div>
                                 <div className="flex justify-between text-gray-400">
                                     <span>Tax</span>
-                                    <span>${(order.taxPrice || 0).toFixed(2)}</span>
+                                    <span>{(order.taxPrice || 0).toFixed(2)} TND</span>
                                 </div>
                                 <div className="flex justify-between text-white font-bold text-xl pt-2 border-t border-white/10">
                                     <span>Total</span>
-                                    <span>${(order.totalPrice || 0).toFixed(2)}</span>
+                                    <span>{(order.totalPrice || 0).toFixed(2)} TND</span>
                                 </div>
                             </div>
                         </div>

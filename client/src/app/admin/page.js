@@ -194,7 +194,7 @@ const AdminDashboard = () => {
                                             <span className="font-bold text-white text-lg">{product.name}</span>
                                         </td>
                                         <td className="p-6">{product.brand?.name || product.brand}</td>
-                                        <td className="p-6 font-mono text-white">${product.price}</td>
+                                        <td className="p-6 font-mono text-white">{product.price} TND</td>
                                         <td className="p-6">
                                             <div className="flex items-center justify-center gap-2">
                                                 <Link href={`/product/${product._id}`} className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors" title="View">
