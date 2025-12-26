@@ -13,7 +13,7 @@ export const NotificationProvider = ({ children }) => {
     const [unreadCount, setUnreadCount] = useState(0);
 
     const fetchNotifications = async () => {
-        if (!user || !user.isAdmin) return;
+        if (!user) return;
 
         try {
             const token = localStorage.getItem('token');
@@ -63,7 +63,7 @@ export const NotificationProvider = ({ children }) => {
 
     // Poll for notifications every 30 seconds
     useEffect(() => {
-        if (user?.isAdmin) {
+        if (user) {
             fetchNotifications(); // Initial fetch
             const interval = setInterval(fetchNotifications, 30000);
             return () => clearInterval(interval);

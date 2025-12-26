@@ -57,15 +57,12 @@ const OrderSuccessContent = ({ id }) => {
     );
 };
 
-export default function OrderSuccessPage({ params }) {
-    // Starting Next 13/15, params are async in some contexts, but usually directly accesssible in page components.
-    // Let's safe-guard by using React.use() if needed, but standard page props works.
-    // Actually, in Client Components, we use useParams hook. In Server Page, it's prop.
+export default function OrderSuccessPage() {
+    const params = useParams();
 
-    // Let's make the Page server component and pass ID to client content.
     return (
         <ProtectedRoute>
-            <OrderSuccessContent id={params.id} />
+            <OrderSuccessContent id={params?.id} />
         </ProtectedRoute>
     );
 }

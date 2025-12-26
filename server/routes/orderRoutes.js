@@ -43,6 +43,7 @@ router.post('/', protect, async (req, res) => {
                 message: `New Order #${createdOrder._id} from ${req.user.name} - ${totalPrice} TND`,
                 type: 'order',
                 link: `/admin/orders`,
+                user: null, // Admin notification
                 isRead: false
             });
         } catch (error) {
@@ -118,6 +119,20 @@ router.put('/:id/cancel', protect, async (req, res) => {
         order.cancelledAt = Date.now();
 
         const updatedOrder = await order.save();
+
+        // Notify Admin via In-App Notification
+        try {
+            await Notification.create({
+                message: `Order #${order._id} has been cancelled by the customer.`,
+                type: 'order',
+                link: `/admin/orders`,
+                user: null, // Admin notification
+                isRead: false
+            });
+        } catch (error) {
+            console.error('Failed to create cancellation notification:', error);
+        }
+
         res.json(updatedOrder);
     } else {
         res.status(404).json({ message: 'Order not found' });
@@ -141,6 +156,19 @@ router.put('/:id/deliver', protect, admin, async (req, res) => {
         order.deliveredAt = Date.now();
 
         const updatedOrder = await order.save();
+
+        // Notify User via In-App Notification
+        try {
+            await Notification.create({
+                message: `Your Order #${order._id} has been Delivered!`,
+                type: 'order',
+                link: `/profile`,
+                user: order.user._id,
+                isRead: false
+            });
+        } catch (error) {
+            console.error('Failed to create delivery notification:', error);
+        }
 
         // Send email
         try {
@@ -179,6 +207,20 @@ router.put('/:id/pay', protect, admin, async (req, res) => {
         };
 
         const updatedOrder = await order.save();
+
+        // Notify User via In-App Notification
+        try {
+            await Notification.create({
+                message: `Payment Received for Order #${order._id}. Thank you!`,
+                type: 'order',
+                link: `/profile`,
+                user: order.user, // Assuming populated or just ID is fine if schema is Ref
+                isRead: false
+            });
+        } catch (error) {
+            console.error('Failed to create payment notification:', error);
+        }
+
         res.json(updatedOrder);
     } else {
         res.status(404).json({ message: 'Order not found' });
