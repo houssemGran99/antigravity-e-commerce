@@ -12,6 +12,23 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [wishlist, setWishlist] = useState([]);
+
+    const fetchWishlist = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            const res = await fetch('/api/users/wishlist', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setWishlist(data.map(item => item._id)); // Store IDs for easy checking
+            }
+        } catch (error) {
+            console.error('Error fetching wishlist:', error);
+        }
+    };
 
     useEffect(() => {
         // Check for saved token on load
@@ -26,6 +43,7 @@ export const AuthProvider = ({ children }) => {
                     logout();
                 } else {
                     setUser(JSON.parse(savedUser));
+                    fetchWishlist();
                 }
             } catch (error) {
                 logout();
@@ -33,6 +51,40 @@ export const AuthProvider = ({ children }) => {
         }
         setLoading(false);
     }, []);
+
+    const addToWishlist = async (productId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`/api/users/wishlist/${productId}`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const newWishlist = await res.json();
+                setWishlist(newWishlist);
+                toast.success('Added to wishlist');
+            }
+        } catch (error) {
+            toast.error('Failed to add to wishlist');
+        }
+    };
+
+    const removeFromWishlist = async (productId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`/api/users/wishlist/${productId}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const newWishlist = await res.json();
+                setWishlist(newWishlist);
+                toast.success('Removed from wishlist');
+            }
+        } catch (error) {
+            toast.error('Failed to remove from wishlist');
+        }
+    };
 
     const login = async (googleData) => {
         try {
@@ -54,6 +106,8 @@ export const AuthProvider = ({ children }) => {
             setUser(data.user);
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
+
+            fetchWishlist(); // Fetch wishlist on login
 
             toast.success(`Welcome back, ${data.user.name}!`);
             return { success: true };
@@ -97,13 +151,14 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         googleLogout();
         setUser(null);
+        setWishlist([]); // Clear wishlist
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = '/';
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, loginAdmin, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, loginAdmin, logout, loading, wishlist, addToWishlist, removeFromWishlist }}>
             {children}
         </AuthContext.Provider>
     );

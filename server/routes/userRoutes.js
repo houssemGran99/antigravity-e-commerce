@@ -4,6 +4,51 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { protect, admin } = require('../middleware/authMiddleware');
 
+
+// @desc    Get user wishlist
+// @route   GET /api/users/wishlist
+// @access  Private
+router.get('/wishlist', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).populate('wishlist');
+        res.json(user.wishlist);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// @desc    Add to wishlist
+// @route   POST /api/users/wishlist/:id
+// @access  Private
+router.post('/wishlist/:id', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        const productId = req.params.id;
+
+        if (!user.wishlist.includes(productId)) {
+            user.wishlist.push(productId);
+            await user.save();
+        }
+        res.json(user.wishlist);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// @desc    Remove from wishlist
+// @route   DELETE /api/users/wishlist/:id
+// @access  Private
+router.delete('/wishlist/:id', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        user.wishlist = user.wishlist.filter(id => id.toString() !== req.params.id);
+        await user.save();
+        res.json(user.wishlist);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Private/Admin

@@ -2,23 +2,45 @@
 
 import React, { useContext } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Star } from 'lucide-react';
+import { ShoppingBag, Star, Heart } from 'lucide-react';
 import { CartState } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
 const ProductCard = ({ product }) => {
     const { addToCart } = useContext(CartState);
-    const { user } = useAuth();
+    const { user, wishlist, addToWishlist, removeFromWishlist } = useAuth();
+
+    // Safety check for wishlist array
+    const inWishlist = wishlist && wishlist.includes(product._id);
+
+    const toggleWishlist = (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // Prevent navigating to product details
+        if (inWishlist) {
+            removeFromWishlist(product._id);
+        } else {
+            addToWishlist(product._id);
+        }
+    };
 
     return (
         <div className="group relative bg-dark-800 rounded-2xl overflow-hidden border border-white/5 hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10">
-            <div className="aspect-[4/3] overflow-hidden">
+            <div className="aspect-[4/3] overflow-hidden relative">
                 <img
                     src={product.imageUrl}
                     alt={product.name}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/400x300?text=No+Image'; }}
                 />
+
+                {user && !user.isAdmin && (
+                    <button
+                        onClick={toggleWishlist}
+                        className="absolute top-3 right-3 p-2 rounded-full bg-black/50 hover:bg-black/70 transition-colors z-10"
+                    >
+                        <Heart className={`w-5 h-5 ${inWishlist ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+                    </button>
+                )}
             </div>
 
             <div className="p-5">

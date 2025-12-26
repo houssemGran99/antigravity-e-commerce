@@ -3,7 +3,7 @@
 import React, { useContext, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { ShoppingBag, Camera, Menu, Search, Bell, Check, X } from 'lucide-react';
+import { ShoppingBag, Camera, Menu, Search, Bell, Check, X, Heart } from 'lucide-react';
 import { CartState } from '../context/CartContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
@@ -153,14 +153,19 @@ const Navbar = () => {
                         )}
 
                         {!user?.isAdmin && pathname !== '/admin/login' && (
-                            <Link href="/cart" className="relative p-2 hover:bg-white/5 rounded-full transition-colors text-white">
-                                <ShoppingBag className="w-6 h-6" />
-                                {cart.length > 0 && (
-                                    <span className="absolute top-0 right-0 bg-primary text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full text-white">
-                                        {cart.length}
-                                    </span>
-                                )}
-                            </Link>
+                            <>
+                                <Link href="/wishlist" className="p-2 hover:bg-white/5 rounded-full transition-colors text-white">
+                                    <Heart className="w-6 h-6" />
+                                </Link>
+                                <Link href="/cart" className="relative p-2 hover:bg-white/5 rounded-full transition-colors text-white">
+                                    <ShoppingBag className="w-6 h-6" />
+                                    {cart.length > 0 && (
+                                        <span className="absolute top-0 right-0 bg-primary text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full text-white">
+                                            {cart.length}
+                                        </span>
+                                    )}
+                                </Link>
+                            </>
                         )}
                         <button className="md:hidden p-2 text-white">
                             <Menu className="w-6 h-6" />
