@@ -3,14 +3,17 @@
 import React, { useContext, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ShoppingBag, Camera, Menu, Search } from 'lucide-react';
+import { ShoppingBag, Camera, Menu, Search, Bell, Check, X } from 'lucide-react';
 import { CartState } from '../context/CartContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
+import { useNotifications } from '../context/NotificationContext';
 
 const Navbar = () => {
     const { cart } = useContext(CartState);
     const { user, login, logout } = useAuth();
+    const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+    const [showNotifications, setShowNotifications] = useState(false);
 
     return (
         <nav className="sticky top-0 z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/10">
@@ -43,6 +46,79 @@ const Navbar = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
+                        {user?.isAdmin && (
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowNotifications(!showNotifications)}
+                                    className="p-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-full transition-colors relative"
+                                >
+                                    <Bell className="w-5 h-5" />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-dark-900">
+                                            {unreadCount}
+                                        </span>
+                                    )}
+                                </button>
+
+                                {showNotifications && (
+                                    <div className="absolute right-0 mt-2 w-80 bg-dark-900 border border-white/10 rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+                                        <div className="p-3 border-b border-white/5 flex justify-between items-center bg-dark-800/50">
+                                            <h3 className="text-sm font-semibold text-white">Notifications</h3>
+                                            {unreadCount > 0 && (
+                                                <button
+                                                    onClick={markAllAsRead}
+                                                    className="text-xs text-primary hover:text-blue-400 transition-colors"
+                                                >
+                                                    Mark all read
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="max-h-80 overflow-y-auto">
+                                            {notifications.length === 0 ? (
+                                                <div className="p-8 text-center text-gray-500 text-sm">
+                                                    No notifications
+                                                </div>
+                                            ) : (
+                                                notifications.map(notification => (
+                                                    <div
+                                                        key={notification._id}
+                                                        className={`p-4 border-b border-white/5 hover:bg-white/5 transition-colors relative group ${!notification.isRead ? 'bg-primary/5' : ''}`}
+                                                    >
+                                                        <div className="flex gap-3">
+                                                            <div className="flex-1">
+                                                                <Link
+                                                                    href={notification.link || '#'}
+                                                                    onClick={() => {
+                                                                        setShowNotifications(false);
+                                                                        markAsRead(notification._id);
+                                                                    }}
+                                                                    className={`text-sm block mb-1 ${!notification.isRead ? 'text-white font-medium' : 'text-gray-400'}`}
+                                                                >
+                                                                    {notification.message}
+                                                                </Link>
+                                                                <span className="text-xs text-gray-600 block">
+                                                                    {new Date(notification.createdAt).toLocaleDateString()} {new Date(notification.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                </span>
+                                                            </div>
+                                                            {!notification.isRead && (
+                                                                <button
+                                                                    onClick={() => markAsRead(notification._id)}
+                                                                    className="text-gray-500 hover:text-primary opacity-0 group-hover:opacity-100 transition-all self-start"
+                                                                    title="Mark as read"
+                                                                >
+                                                                    <Check className="w-4 h-4" />
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {user ? (
                             <div className="flex items-center gap-3">
                                 <Link href="/profile" className="flex items-center gap-3 hover:bg-white/5 p-1.5 rounded-full pr-4 transition-colors group">

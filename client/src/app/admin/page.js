@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Plus, Edit, Trash2, Eye, Tag, Users, ShoppingBag, Layers } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 
 const AdminDashboard = () => {
     const [products, setProducts] = useState([]);
@@ -12,13 +12,61 @@ const AdminDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterCategory, setFilterCategory] = useState('');
 
-    const categories = [...new Set(products.map(p => p.category?.name || 'Uncategorized'))].sort();
+    const categories = [...new Set((products || []).map(p => p.category?.name || 'Uncategorized'))].sort();
 
-    const filteredProducts = products.filter(product => {
+    const filteredProducts = (products || []).filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = filterCategory ? (product.category?.name || 'Uncategorized') === filterCategory : true;
         return matchesSearch && matchesCategory;
     });
+
+    // 1. Calculate Daily Revenue (Last 7 Days)
+    const revenueData = React.useMemo(() => {
+        const last7Days = [...Array(7)].map((_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }).reverse();
+
+        const dataMap = {};
+        last7Days.forEach(date => dataMap[date] = 0);
+
+        orders.forEach(order => {
+            if (order.isPaid || order.isDelivered) {
+                const date = new Date(order.createdAt || order.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                if (dataMap[date] !== undefined) {
+                    dataMap[date] += (order.totalPrice || 0);
+                }
+            }
+        });
+
+        return Object.keys(dataMap).map(date => ({
+            date,
+            revenue: dataMap[date]
+        }));
+    }, [orders]);
+
+    // 2. Calculate Top 5 Selling Products
+    const topProductsData = React.useMemo(() => {
+        const productStats = {};
+
+        orders.forEach(order => {
+            if (order.isPaid || order.isDelivered) {
+                order.orderItems.forEach(item => {
+                    if (productStats[item.name]) {
+                        productStats[item.name] += item.qty;
+                    } else {
+                        productStats[item.name] = item.qty;
+                    }
+                });
+            }
+        });
+
+        return Object.entries(productStats)
+            .map(([name, sales]) => ({ name, sales }))
+            .sort((a, b) => b.sales - a.sales)
+            .slice(0, 5);
+    }, [orders]);
 
     useEffect(() => {
         fetchData();
@@ -37,8 +85,20 @@ const AdminDashboard = () => {
             const productsData = await productsRes.json();
             const ordersData = await ordersRes.json();
 
-            setProducts(productsData);
-            setOrders(ordersData);
+            if (Array.isArray(productsData)) {
+                setProducts(productsData);
+            } else {
+                console.error('Products API returned invalid data:', productsData);
+                setProducts([]);
+            }
+
+            if (Array.isArray(ordersData)) {
+                setOrders(ordersData);
+            } else {
+                console.error('Orders API returned invalid data:', ordersData);
+                setOrders([]);
+            }
+
             setLoading(false);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -74,15 +134,19 @@ const AdminDashboard = () => {
                     <h1 className="text-4xl font-bold text-white">Admin Dashboard</h1>
                     <div className="flex gap-4">
                         <Link href="/admin/brands" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                            <Tag className="w-5 h-5" />
                             Manage Brands
                         </Link>
                         <Link href="/admin/users" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                            <Users className="w-5 h-5" />
                             Manage Users
                         </Link>
                         <Link href="/admin/orders" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                            <ShoppingBag className="w-5 h-5" />
                             Manage Orders
                         </Link>
                         <Link href="/admin/categories" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                            <Layers className="w-5 h-5" />
                             Manage Categories
                         </Link>
                         <Link href="/admin/new" className="bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-primary/20">
@@ -93,21 +157,138 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    {/* Revenue Trends Chart */}
+                    <div className="bg-dark-800 rounded-2xl p-6 border border-white/5">
+                        <h2 className="text-xl font-bold text-white mb-6">Revenue Trends (Last 7 Days)</h2>
+                        <div className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={revenueData}>
+                                    <defs>
+                                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
+                                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#444" strokeOpacity={0.3} vertical={false} />
+                                    <XAxis
+                                        dataKey="date"
+                                        stroke="#888"
+                                        tick={{ fill: '#aaa', fontSize: 12 }}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis
+                                        stroke="#888"
+                                        tick={{ fill: '#aaa', fontSize: 12 }}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickFormatter={(value) => `${value} TND`}
+                                    />
+                                    <Tooltip
+                                        cursor={{ stroke: '#10b981', strokeWidth: 2 }}
+                                        contentStyle={{
+                                            backgroundColor: '#1a1a1a',
+                                            border: '1px solid #333',
+                                            borderRadius: '12px',
+                                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
+                                        }}
+                                        itemStyle={{ color: '#fff', fontWeight: 'bold' }}
+                                        formatter={(value) => [`${value.toFixed(2)} TND`, 'Revenue']}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="revenue"
+                                        stroke="#10b981"
+                                        strokeWidth={3}
+                                        fillOpacity={1}
+                                        fill="url(#colorRevenue)"
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    {/* Top Selling Products */}
+                    <div className="bg-dark-800 rounded-2xl p-6 border border-white/5">
+                        <h2 className="text-xl font-bold text-white mb-6">Top Selling Products</h2>
+                        <div className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart layout="vertical" data={topProductsData}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#444" strokeOpacity={0.3} horizontal={true} vertical={false} />
+                                    <XAxis type="number" hide />
+                                    <YAxis
+                                        dataKey="name"
+                                        type="category"
+                                        width={120}
+                                        stroke="#888"
+                                        tick={{ fill: '#aaa', fontSize: 12 }}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 15)}...` : value}
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                                        contentStyle={{
+                                            backgroundColor: '#1a1a1a',
+                                            border: '1px solid #333',
+                                            borderRadius: '12px',
+                                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
+                                        }}
+                                        itemStyle={{ color: '#fff', fontWeight: 'bold' }}
+                                        formatter={(value) => [`${value} Sold`, 'Sales']}
+                                    />
+                                    <Bar dataKey="sales" fill="#8b5cf6" radius={[0, 4, 4, 0]} barSize={20} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
                     {/* Products by Quantity Chart */}
                     <div className="bg-dark-800 rounded-2xl p-6 border border-white/5">
                         <h2 className="text-xl font-bold text-white mb-6">Inventory Status</h2>
                         <div className="h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={[...products].sort((a, b) => (b.inStock || 0) - (a.inStock || 0)).slice(0, 10)}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                                    <XAxis dataKey="name" stroke="#888" tick={{ fill: '#888' }} tickFormatter={(value) => value.length > 10 ? `${value.substring(0, 10)}...` : value} />
-                                    <YAxis stroke="#888" tick={{ fill: '#888' }} />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '8px' }}
-                                        itemStyle={{ color: '#fff' }}
+                                    <defs>
+                                        <linearGradient id="colorInStock" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
+                                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#444" strokeOpacity={0.3} vertical={false} />
+                                    <XAxis
+                                        dataKey="name"
+                                        stroke="#888"
+                                        tick={{ fill: '#aaa', fontSize: 12 }}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickFormatter={(value) => value.length > 8 ? `${value.substring(0, 8)}...` : value}
+                                        interval={0}
                                     />
-                                    <Legend />
-                                    <Bar dataKey="inStock" name="Stock Quantity" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                                    <YAxis
+                                        stroke="#888"
+                                        tick={{ fill: '#aaa', fontSize: 12 }}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                                        contentStyle={{
+                                            backgroundColor: '#1a1a1a',
+                                            border: '1px solid #333',
+                                            borderRadius: '12px',
+                                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
+                                        }}
+                                        itemStyle={{ color: '#fff', fontWeight: 'bold' }}
+                                        formatter={(value) => [`${value} Units`, 'In Stock']}
+                                        labelStyle={{ color: '#aaa', marginBottom: '5px' }}
+                                    />
+                                    <Bar
+                                        dataKey="inStock"
+                                        name="Stock Quantity"
+                                        fill="url(#colorInStock)"
+                                        radius={[6, 6, 0, 0]}
+                                        barSize={40}
+                                    />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -128,11 +309,22 @@ const AdminDashboard = () => {
                                         ].filter(item => item.value > 0)}
                                         cx="50%"
                                         cy="50%"
-                                        labelLine={false}
-                                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                        innerRadius={60}
                                         outerRadius={100}
-                                        fill="#8884d8"
+                                        paddingAngle={5}
                                         dataKey="value"
+                                        label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+                                            const RADIAN = Math.PI / 180;
+                                            const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                                            const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                                            const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                                            return percent > 0.1 ? (
+                                                <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-xs font-bold">
+                                                    {`${(percent * 100).toFixed(0)}%`}
+                                                </text>
+                                            ) : null;
+                                        }}
+                                        labelLine={false}
                                     >
                                         {[
                                             { name: 'Paid', color: '#10b981' }, // Green
@@ -140,12 +332,24 @@ const AdminDashboard = () => {
                                             { name: 'Cancelled', color: '#ef4444' }, // Red
                                             { name: 'Pending', color: '#eab308' } // Yellow
                                         ].map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                            <Cell key={`cell-${index}`} fill={entry.color} stroke="rgba(0,0,0,0.5)" strokeWidth={1} />
                                         ))}
                                     </Pie>
                                     <Tooltip
-                                        contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '8px' }}
-                                        itemStyle={{ color: '#fff' }}
+                                        contentStyle={{
+                                            backgroundColor: '#1a1a1a',
+                                            border: '1px solid #333',
+                                            borderRadius: '12px',
+                                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
+                                        }}
+                                        itemStyle={{ color: '#fff', fontWeight: 'bold' }}
+                                        formatter={(value) => [`${value} Orders`, 'Count']}
+                                    />
+                                    <Legend
+                                        verticalAlign="bottom"
+                                        height={36}
+                                        iconType="circle"
+                                        formatter={(value) => <span className="text-gray-400 font-medium ml-1">{value}</span>}
                                     />
                                 </PieChart>
                             </ResponsiveContainer>

@@ -1,14 +1,18 @@
 'use client';
 
 import React from 'react';
-import { X, Package, Calendar, User, MapPin, Mail, Phone, Truck, CheckCircle, CreditCard } from 'lucide-react';
+import { X, Package, Calendar, User, MapPin, Mail, Phone, Truck, CheckCircle, CreditCard, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
     const { user } = useAuth();
     if (!isOpen || !order) return null;
 
+    const [deliverLoading, setDeliverLoading] = React.useState(false);
+    const [payLoading, setPayLoading] = React.useState(false);
+
     const deliverOrder = async () => {
+        setDeliverLoading(true);
         try {
             const token = localStorage.getItem('token');
             const res = await fetch(`/api/orders/${order._id}/deliver`, {
@@ -27,10 +31,13 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
             }
         } catch (error) {
             console.error('Error delivering order:', error);
+        } finally {
+            setDeliverLoading(false);
         }
     };
 
     const payOrder = async () => {
+        setPayLoading(true);
         try {
             const token = localStorage.getItem('token');
             const res = await fetch(`/api/orders/${order._id}/pay`, {
@@ -48,6 +55,8 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
             }
         } catch (error) {
             console.error('Error paying order:', error);
+        } finally {
+            setPayLoading(false);
         }
     };
     if (!isOpen || !order) return null;
@@ -180,25 +189,27 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                         {!order.isPaid && (
                             <button
                                 onClick={payOrder}
-                                className="flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all"
+                                disabled={payLoading || deliverLoading}
+                                className="flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                <CreditCard className="w-5 h-5" />
-                                Mark as Paid
+                                {payLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
+                                {payLoading ? 'Processing...' : 'Mark as Paid'}
                             </button>
                         )}
                         {!order.isDelivered && (
                             <button
                                 onClick={deliverOrder}
-                                className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all"
+                                disabled={deliverLoading || payLoading}
+                                className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                <Truck className="w-5 h-5" />
-                                Mark as Delivered
+                                {deliverLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Truck className="w-5 h-5" />}
+                                {deliverLoading ? 'Processing...' : 'Mark as Delivered'}
                             </button>
                         )}
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

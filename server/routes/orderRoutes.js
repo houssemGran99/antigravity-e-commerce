@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
+const Notification = require('../models/Notification');
 const { protect, admin } = require('../middleware/authMiddleware');
+const sendEmail = require('../utils/sendEmail');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -34,6 +36,34 @@ router.post('/', protect, async (req, res) => {
         });
 
         const createdOrder = await order.save();
+
+        // 1. Create In-App Notification
+        try {
+            await Notification.create({
+                message: `New Order #${createdOrder._id} from ${req.user.name} - ${totalPrice} TND`,
+                type: 'order',
+                link: `/admin/orders`,
+                isRead: false
+            });
+        } catch (error) {
+            console.error('Failed to create notification:', error);
+        }
+
+        // Notify Admin via Email
+        try {
+            const adminEmail = process.env.FROM_EMAIL; // Sending to shop owner
+            const orderLink = `${process.env.CLIENT_URL || 'http://localhost:3000'}/admin/orders/${createdOrder._id}`; // Conceptual link
+
+            await sendEmail({
+                email: adminEmail,
+                subject: `New Order Received! ID: ${createdOrder._id}`,
+                message: `You have received a new order from ${req.user.name}.\n\nOrder ID: ${createdOrder._id}\nTotal: ${totalPrice} TND\nItems: ${orderItems.length}\n\nCheck the dashboard for details.`
+            });
+            console.log(`[New Order] Admin notification sent to ${adminEmail}`);
+        } catch (error) {
+            console.error('[New Order] Failed to send admin notification:', error);
+        }
+
         res.status(201).json(createdOrder);
     }
 });
@@ -97,7 +127,6 @@ router.put('/:id/cancel', protect, async (req, res) => {
 // @desc    Update order to delivered
 // @route   PUT /api/orders/:id/deliver
 // @access  Private/Admin
-const sendEmail = require('../utils/sendEmail');
 
 // ... (existing imports)
 

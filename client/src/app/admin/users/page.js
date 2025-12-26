@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Trash2, Search } from 'lucide-react';
+import { ArrowLeft, Trash2, Search, Users } from 'lucide-react';
 
 export default function AdminUsers() {
     const [users, setUsers] = useState([]);
@@ -65,7 +65,10 @@ export default function AdminUsers() {
                 </Link>
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <h1 className="text-3xl font-bold text-white">Manage Users</h1>
+                    <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                        <Users className="w-8 h-8 text-primary" />
+                        Manage Users
+                    </h1>
 
                     <div className="relative">
                         <input

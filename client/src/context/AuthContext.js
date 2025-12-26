@@ -44,7 +44,8 @@ export const AuthProvider = ({ children }) => {
             });
 
             if (!res.ok) {
-                throw new Error('Login failed');
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.message || errorData.error || 'Login failed');
             }
 
             const data = await res.json();

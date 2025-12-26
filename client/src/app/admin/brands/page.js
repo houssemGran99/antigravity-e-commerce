@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Save, Trash2, Edit } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Edit, Tag } from 'lucide-react';
 
 export default function AdminBrands() {
     const [brands, setBrands] = useState([]);
@@ -95,13 +95,16 @@ export default function AdminBrands() {
 
     return (
         <div className="pt-10 pb-20">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Link href="/admin" className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition-colors">
                     <ArrowLeft className="w-5 h-5 mr-2" />
                     Back to Dashboard
                 </Link>
 
-                <h1 className="text-3xl font-bold text-white mb-8">Manage Brands</h1>
+                <h1 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                    <Tag className="w-8 h-8 text-primary" />
+                    Manage Brands
+                </h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* Form Section */}
