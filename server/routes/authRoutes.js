@@ -113,8 +113,9 @@ router.post('/google', async (req, res) => {
             token: sessionToken
         });
     } catch (error) {
-        console.error('Auth Error:', error);
-        res.status(401).json({ message: 'Authentication failed', error: error.message });
+        console.error('Auth Error Stack:', error.stack);
+        console.error('Auth Error Details:', error);
+        res.status(500).json({ message: 'Authentication failed', error: error.message });
     }
 });
 
