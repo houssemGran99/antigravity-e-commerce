@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Save, Trash2, Edit } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Edit, Layers } from 'lucide-react';
 
 export default function AdminCategories() {
     const [categories, setCategories] = useState([]);
@@ -102,7 +102,10 @@ export default function AdminCategories() {
                     Back to Dashboard
                 </Link>
 
-                <h1 className="text-3xl font-bold text-white mb-8">Manage Categories</h1>
+                <h1 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                    <Layers className="w-8 h-8 text-primary" />
+                    Manage Categories
+                </h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* Form Section */}

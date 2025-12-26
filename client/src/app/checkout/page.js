@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { CartState } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import ProtectedRoute from '../../components/ProtectedRoute';
-import { ArrowLeft, MapPin, Phone, CreditCard } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, CreditCard, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 const CheckoutContent = () => {
@@ -18,6 +18,7 @@ const CheckoutContent = () => {
     const [postalCode, setPostalCode] = useState('');
     const [country, setCountry] = useState('');
     const [phone, setPhone] = useState('');
+    const [loading, setLoading] = useState(false);
 
     React.useEffect(() => {
         if (user) {
@@ -43,6 +44,7 @@ const CheckoutContent = () => {
 
     const submitHandler = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
         const orderData = {
             orderItems: cart.map(item => ({
@@ -86,10 +88,12 @@ const CheckoutContent = () => {
             } else {
                 console.error('Order Failed', res.status);
                 alert('Failed to place order.');
+                setLoading(false);
             }
         } catch (error) {
             console.error('Error placing order:', error);
             alert('Error placing order.');
+            setLoading(false);
         }
     };
 
@@ -177,8 +181,19 @@ const CheckoutContent = () => {
                                 />
                             </div>
 
-                            <button type="submit" className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 mt-8 text-lg cursor-pointer">
-                                Place Order
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 mt-8 text-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    'Place Order'
+                                )}
                             </button>
                         </form>
                     </div>

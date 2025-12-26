@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Tag, Users, ShoppingBag, Layers } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 
 const AdminDashboard = () => {
@@ -12,9 +12,9 @@ const AdminDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterCategory, setFilterCategory] = useState('');
 
-    const categories = [...new Set(products.map(p => p.category?.name || 'Uncategorized'))].sort();
+    const categories = [...new Set((products || []).map(p => p.category?.name || 'Uncategorized'))].sort();
 
-    const filteredProducts = products.filter(product => {
+    const filteredProducts = (products || []).filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = filterCategory ? (product.category?.name || 'Uncategorized') === filterCategory : true;
         return matchesSearch && matchesCategory;
@@ -85,8 +85,20 @@ const AdminDashboard = () => {
             const productsData = await productsRes.json();
             const ordersData = await ordersRes.json();
 
-            setProducts(productsData);
-            setOrders(ordersData);
+            if (Array.isArray(productsData)) {
+                setProducts(productsData);
+            } else {
+                console.error('Products API returned invalid data:', productsData);
+                setProducts([]);
+            }
+
+            if (Array.isArray(ordersData)) {
+                setOrders(ordersData);
+            } else {
+                console.error('Orders API returned invalid data:', ordersData);
+                setOrders([]);
+            }
+
             setLoading(false);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -122,15 +134,19 @@ const AdminDashboard = () => {
                     <h1 className="text-4xl font-bold text-white">Admin Dashboard</h1>
                     <div className="flex gap-4">
                         <Link href="/admin/brands" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                            <Tag className="w-5 h-5" />
                             Manage Brands
                         </Link>
                         <Link href="/admin/users" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                            <Users className="w-5 h-5" />
                             Manage Users
                         </Link>
                         <Link href="/admin/orders" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                            <ShoppingBag className="w-5 h-5" />
                             Manage Orders
                         </Link>
                         <Link href="/admin/categories" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                            <Layers className="w-5 h-5" />
                             Manage Categories
                         </Link>
                         <Link href="/admin/new" className="bg-primary hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-primary/20">
