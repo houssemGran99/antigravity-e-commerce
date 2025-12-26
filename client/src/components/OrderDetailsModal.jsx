@@ -7,10 +7,10 @@ import toast from 'react-hot-toast';
 
 const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
     const { user } = useAuth();
-    if (!isOpen || !order) return null;
-
     const [deliverLoading, setDeliverLoading] = React.useState(false);
     const [payLoading, setPayLoading] = React.useState(false);
+
+    if (!isOpen || !order) return null;
 
     const deliverOrder = async () => {
         setDeliverLoading(true);
