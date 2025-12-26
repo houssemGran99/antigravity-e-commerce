@@ -1,6 +1,8 @@
 import Hero from '../components/Hero';
 import ProductCard from '../components/ProductCard';
 
+export const dynamic = 'force-dynamic';
+
 async function getProducts() {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://antigravity-e-commerce-uv1a.vercel.app';
