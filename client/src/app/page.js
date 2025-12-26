@@ -20,7 +20,14 @@ async function getProducts() {
 
 export default async function Home() {
   const productsData = await getProducts();
-  const products = Array.isArray(productsData) ? productsData : [];
+  // Handle both array (legacy/old) and object (paginated) responses
+  let products = [];
+  if (Array.isArray(productsData)) {
+    products = productsData;
+  } else if (productsData && Array.isArray(productsData.products)) {
+    products = productsData.products;
+  }
+
   const featuredProducts = products.slice(0, 3);
 
   return (

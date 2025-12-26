@@ -85,7 +85,9 @@ const AdminDashboard = () => {
             const productsData = await productsRes.json();
             const ordersData = await ordersRes.json();
 
-            if (Array.isArray(productsData)) {
+            if (productsData.products && Array.isArray(productsData.products)) {
+                setProducts(productsData.products);
+            } else if (Array.isArray(productsData)) {
                 setProducts(productsData);
             } else {
                 console.error('Products API returned invalid data:', productsData);
