@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const notificationSchema = mongoose.Schema({
     message: { type: String, required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // null = admin/system, value = specific user
     type: { type: String, default: 'order' }, // 'order', 'system', 'user'
     link: { type: String }, // e.g., '/admin/orders/123'
     isRead: { type: Boolean, default: false },

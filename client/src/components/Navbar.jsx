@@ -46,7 +46,7 @@ const Navbar = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        {user?.isAdmin && (
+                        {user && (
                             <div className="relative">
                                 <button
                                     onClick={() => setShowNotifications(!showNotifications)}

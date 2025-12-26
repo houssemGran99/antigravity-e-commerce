@@ -3,45 +3,87 @@ const router = express.Router();
 const Notification = require('../models/Notification');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-// @desc    Get all notifications (Admin only)
+// @desc    Get notifications
 // @route   GET /api/notifications
-// @access  Private/Admin
-router.get('/', protect, admin, async (req, res) => {
+// @access  Private
+router.get('/', protect, async (req, res) => {
     try {
-        const notifications = await Notification.find({}).sort({ createdAt: -1 }).limit(50); // Limit to last 50
+        let query;
+        if (req.user.isAdmin) {
+            // Admins see global admin notifications (user: null/undefined) AND their own
+            query = {
+                $or: [
+                    { user: null },
+                    { user: { $exists: false } },
+                    { user: req.user._id }
+                ]
+            };
+        } else {
+            // Users only see their own
+            query = { user: req.user._id };
+        }
+
+        const notifications = await Notification.find(query)
+            .sort({ createdAt: -1 })
+            .limit(50);
         res.json(notifications);
     } catch (error) {
+        console.error('Error fetching notifications:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 });
 
 // @desc    Mark notification as read
 // @route   PUT /api/notifications/:id/read
-// @access  Private/Admin
-router.put('/:id/read', protect, admin, async (req, res) => {
+// @access  Private
+router.put('/:id/read', protect, async (req, res) => {
     try {
         const notification = await Notification.findById(req.params.id);
 
-        if (notification) {
-            notification.isRead = true;
-            const updatedNotification = await notification.save();
-            res.json(updatedNotification);
-        } else {
-            res.status(404).json({ message: 'Notification not found' });
+        if (!notification) {
+            return res.status(404).json({ message: 'Notification not found' });
         }
+
+        // Ownership check
+        const isOwner = notification.user && notification.user.toString() === req.user._id.toString();
+        const isAdminAlert = !notification.user && req.user.isAdmin;
+
+        if (!isOwner && !isAdminAlert) {
+            return res.status(401).json({ message: 'Not authorized' });
+        }
+
+        notification.isRead = true;
+        const updatedNotification = await notification.save();
+        res.json(updatedNotification);
     } catch (error) {
+        console.error('Error reading notification:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 });
 
 // @desc    Mark ALL notifications as read
 // @route   PUT /api/notifications/read-all
-// @access  Private/Admin
-router.put('/read-all', protect, admin, async (req, res) => {
+// @access  Private
+router.put('/read-all', protect, async (req, res) => {
     try {
-        await Notification.updateMany({ isRead: false }, { isRead: true });
+        let query;
+        if (req.user.isAdmin) {
+            query = {
+                $or: [
+                    { user: null },
+                    { user: { $exists: false } },
+                    { user: req.user._id }
+                ],
+                isRead: false
+            };
+        } else {
+            query = { user: req.user._id, isRead: false };
+        }
+
+        await Notification.updateMany(query, { isRead: true });
         res.json({ message: 'All notifications marked as read' });
     } catch (error) {
+        console.error('Error marking all read:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 });
