@@ -41,6 +41,19 @@ const CartPage = () => {
         );
     }
 
+    // Aggregate items
+    const groupedCart = cart.reduce((acc, item) => {
+        const id = item._id;
+        if (!acc[id]) {
+            acc[id] = { ...item, quantity: 1 };
+        } else {
+            acc[id].quantity += 1;
+        }
+        return acc;
+    }, {});
+
+    const uniqueItems = Object.values(groupedCart);
+
     return (
         <div className="pt-10 pb-20 min-h-screen bg-dark-900 text-white">
             <LoginModal
@@ -53,8 +66,8 @@ const CartPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                     {/* Cart Items */}
                     <div className="lg:col-span-2 space-y-4">
-                        {cart.map((item, index) => (
-                            <div key={`${item._id}-${index}`} className="bg-dark-800 rounded-2xl p-4 flex gap-4 border border-white/5 items-center">
+                        {uniqueItems.map((item) => (
+                            <div key={item._id} className="bg-dark-800 rounded-2xl p-4 flex gap-4 border border-white/5 items-center">
                                 <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 bg-dark-900">
                                     <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                                 </div>
@@ -62,15 +75,23 @@ const CartPage = () => {
                                     <p className="text-sm text-primary font-medium">{item.brand?.name || item.brand}</p>
                                     <h3 className="text-xl font-bold truncate">{item.name}</h3>
                                     <p className="text-gray-400 text-sm mt-1 mb-2 line-clamp-1">{item.description}</p>
-                                    <p className="text-lg font-bold">{item.price} TND</p>
+                                    <div className="flex items-center gap-4">
+                                        <p className="text-lg font-bold text-white">{item.price} TND</p>
+                                        <span className="text-xs font-bold px-2 py-1 bg-white/10 rounded-full text-gray-300">
+                                            Qty: {item.quantity}
+                                        </span>
+                                    </div>
                                 </div>
-                                <button
-                                    onClick={() => removeFromCart(item)}
-                                    className="p-3 hover:bg-red-500/10 hover:text-red-500 text-gray-400 rounded-xl transition-colors"
-                                    title="Remove item"
-                                >
-                                    <Trash2 className="w-6 h-6" />
-                                </button>
+                                <div className="flex flex-col items-center gap-2">
+                                    <p className="font-bold text-lg">{(item.price * item.quantity).toFixed(2)} TND</p>
+                                    <button
+                                        onClick={() => removeFromCart(item)}
+                                        className="p-2 hover:bg-red-500/10 hover:text-red-500 text-gray-400 rounded-xl transition-colors flex items-center gap-1 text-xs"
+                                        title="Remove one"
+                                    >
+                                        <Trash2 className="w-4 h-4" /> Remove
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>

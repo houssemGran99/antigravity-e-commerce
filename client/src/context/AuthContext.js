@@ -3,6 +3,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { googleLogout } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
+import toast from 'react-hot-toast';
 
 const AuthContext = createContext();
 
@@ -54,9 +55,11 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
 
+            toast.success(`Welcome back, ${data.user.name}!`);
             return { success: true };
         } catch (error) {
             console.error('Login error:', error);
+            toast.error(error.message || 'Login failed');
             return { success: false, error: error.message };
         }
     };
@@ -82,9 +85,11 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
 
+            toast.success('Admin login successful');
             return { success: true };
         } catch (error) {
             console.error('Admin Login error:', error);
+            toast.error(error.message || 'Admin login failed');
             return { success: false, error: error.message };
         }
     };

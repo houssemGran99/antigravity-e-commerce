@@ -3,6 +3,7 @@
 import React from 'react';
 import { X, Package, Calendar, User, MapPin, Mail, Phone, Truck, CheckCircle, CreditCard, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
     const { user } = useAuth();
@@ -25,12 +26,14 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                 const updatedOrder = await res.json();
                 if (onOrderUpdated) onOrderUpdated(updatedOrder);
                 onClose(); // Close modal to refresh or update local state if passed
+                toast.success('Order marked as delivered');
             } else {
                 console.error('Failed to deliver order:', res.status, res.statusText);
-                alert(`Failed to update order: ${res.status}`);
+                toast.error(`Failed to update order: ${res.status}`);
             }
         } catch (error) {
             console.error('Error delivering order:', error);
+            toast.error('Error connecting to server');
         } finally {
             setDeliverLoading(false);
         }
@@ -52,9 +55,13 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                 const updatedOrder = await res.json();
                 if (onOrderUpdated) onOrderUpdated(updatedOrder);
                 onClose();
+                toast.success('Order marked as paid');
+            } else {
+                toast.error('Failed to mark order as paid');
             }
         } catch (error) {
             console.error('Error paying order:', error);
+            toast.error('Error processing payment update');
         } finally {
             setPayLoading(false);
         }
@@ -140,19 +147,34 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
-                                    {order.orderItems.map((item, idx) => (
-                                        <tr key={idx}>
-                                            <td className="p-3">
-                                                <div className="flex items-center gap-3">
-                                                    <img src={item.image} alt={item.name} className="w-10 h-10 rounded-lg object-cover bg-dark-800" />
-                                                    <span className="text-white font-medium">{item.name}</span>
-                                                </div>
-                                            </td>
-                                            <td className="p-3 text-center text-gray-300">x{item.qty}</td>
-                                            <td className="p-3 text-right text-gray-300">{item.price} TND</td>
-                                            <td className="p-3 text-right text-white font-bold">{(item.price * item.qty).toFixed(2)} TND</td>
-                                        </tr>
-                                    ))}
+                                    {(() => {
+                                        const aggregateOrderItems = (items) => {
+                                            const grouped = items.reduce((acc, item) => {
+                                                const key = item.product || item._id || item.name;
+                                                if (!acc[key]) {
+                                                    acc[key] = { ...item, qty: Number(item.qty || 1) };
+                                                } else {
+                                                    acc[key].qty += Number(item.qty || 1);
+                                                }
+                                                return acc;
+                                            }, {});
+                                            return Object.values(grouped);
+                                        };
+
+                                        return aggregateOrderItems(order.orderItems).map((item, idx) => (
+                                            <tr key={idx}>
+                                                <td className="p-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <img src={item.image} alt={item.name} className="w-10 h-10 rounded-lg object-cover bg-dark-800" />
+                                                        <span className="text-white font-medium">{item.name}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="p-3 text-center text-gray-300">x{item.qty}</td>
+                                                <td className="p-3 text-right text-gray-300">{item.price} TND</td>
+                                                <td className="p-3 text-right text-white font-bold">{(item.price * item.qty).toFixed(2)} TND</td>
+                                            </tr>
+                                        ));
+                                    })()}
                                 </tbody>
                             </table>
                         </div>

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Search, ExternalLink, XCircle, CheckCircle, ShoppingBag, Package, Download } from 'lucide-react';
 import OrderDetailsModal from '../../../components/OrderDetailsModal';
+import toast from 'react-hot-toast';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -31,9 +32,11 @@ const AdminOrders = () => {
                 setOrders(data);
             } else {
                 console.error('Failed to fetch orders:', data.message);
+                toast.error('Failed to fetch orders');
             }
         } catch (error) {
             console.error('Error fetching orders:', error);
+            toast.error('Error connecting to server');
         } finally {
             setLoading(false);
         }
@@ -75,6 +78,7 @@ const AdminOrders = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        toast.success('Orders exported successfully');
     };
 
     return (

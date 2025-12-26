@@ -133,7 +133,7 @@ router.post('/sync', protect, async (req, res) => {
 // Add Item
 router.post('/add', protect, async (req, res) => {
     try {
-        const { productId } = req.body;
+        const { productId, quantity = 1 } = req.body;
         let cart = await Cart.findOne({ user: req.user._id });
 
         if (!cart) {
@@ -143,9 +143,9 @@ router.post('/add', protect, async (req, res) => {
         const existingItemIndex = cart.items.findIndex(item => item.product.toString() === productId);
 
         if (existingItemIndex > -1) {
-            cart.items[existingItemIndex].quantity += 1;
+            cart.items[existingItemIndex].quantity += quantity;
         } else {
-            cart.items.push({ product: productId, quantity: 1 });
+            cart.items.push({ product: productId, quantity: quantity });
         }
 
         await cart.save();
