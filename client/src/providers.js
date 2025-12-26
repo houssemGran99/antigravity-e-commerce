@@ -3,6 +3,7 @@
 import { AuthProvider } from './context/AuthContext';
 import CartContext from './context/CartContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Toaster } from 'react-hot-toast';
 
 import { NotificationProvider } from './context/NotificationContext';
 
@@ -15,6 +16,7 @@ export function Providers({ children }) {
                 <NotificationProvider>
                     <CartContext>
                         {children}
+                        <Toaster position="top-right" />
                     </CartContext>
                 </NotificationProvider>
             </AuthProvider>

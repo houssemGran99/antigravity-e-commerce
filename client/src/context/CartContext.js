@@ -2,6 +2,7 @@
 
 import React, { createContext, useState, useEffect, useRef } from 'react';
 import { useAuth } from './AuthContext';
+import toast from 'react-hot-toast';
 
 export const CartState = createContext();
 
@@ -51,6 +52,7 @@ const CartContext = ({ children }) => {
                     }
                 } catch (error) {
                     console.error('Failed to load cart', error);
+                    toast.error('Failed to load your cart');
                 }
             } else {
                 // Load from local storage if guest
@@ -114,8 +116,10 @@ const CartContext = ({ children }) => {
         }
     }, [cart, user, isInitialized]);
 
-    const addToCart = async (product) => {
-        const newCart = [...cart, product];
+    const addToCart = async (product, quantity = 1) => {
+        // Create array of 'quantity' copies of product for local flat-list cart
+        const newItems = Array(quantity).fill(product);
+        const newCart = [...cart, ...newItems];
         setCart(newCart);
 
         if (user) {
@@ -127,11 +131,14 @@ const CartContext = ({ children }) => {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${token}`
                     },
-                    body: JSON.stringify({ productId: product._id })
+                    body: JSON.stringify({ productId: product._id, quantity })
                 });
             } catch (error) {
                 console.error('Error adding to cloud cart', error);
+                toast.error('Failed to add item to cart');
             }
+        } else {
+            toast.success('Added to cart');
         }
     };
 
@@ -161,6 +168,7 @@ const CartContext = ({ children }) => {
                 });
             } catch (error) {
                 console.error('Error removing from cloud cart', error);
+                toast.error('Failed to remove item from cart');
             }
         }
     };

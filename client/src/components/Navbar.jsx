@@ -2,8 +2,8 @@
 
 import React, { useContext, useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { ShoppingBag, Camera, Menu, Search, Bell, Check, X } from 'lucide-react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { ShoppingBag, Camera, Menu, Search, Bell, Check, X, Heart } from 'lucide-react';
 import { CartState } from '../context/CartContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +14,7 @@ const Navbar = () => {
     const { user, login, logout } = useAuth();
     const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
     const [showNotifications, setShowNotifications] = useState(false);
+    const pathname = usePathname();
 
     return (
         <nav className="sticky top-0 z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/10">
@@ -37,7 +38,7 @@ const Navbar = () => {
 
 
 
-                            {!user?.isAdmin && (
+                            {!user?.isAdmin && pathname !== '/admin/login' && (
                                 <Suspense fallback={<div className="w-48" />}>
                                     <SearchForm />
                                 </Suspense>
@@ -134,30 +135,37 @@ const Navbar = () => {
                                 <button onClick={logout} className="text-sm text-gray-400 hover:text-white transition-colors ml-2">Logout</button>
                             </div>
                         ) : (
-                            <div className="overflow-hidden rounded-lg">
-                                <GoogleLogin
-                                    onSuccess={credentialResponse => {
-                                        login(credentialResponse);
-                                    }}
-                                    onError={() => {
-                                        console.log('Login Failed');
-                                    }}
-                                    theme="filled_black"
-                                    size="medium"
-                                    shape="pill"
-                                />
-                            </div>
+                            pathname !== '/admin/login' && (
+                                <div className="overflow-hidden rounded-lg">
+                                    <GoogleLogin
+                                        onSuccess={credentialResponse => {
+                                            login(credentialResponse);
+                                        }}
+                                        onError={() => {
+                                            console.log('Login Failed');
+                                        }}
+                                        theme="filled_black"
+                                        size="medium"
+                                        shape="pill"
+                                    />
+                                </div>
+                            )
                         )}
 
-                        {!user?.isAdmin && (
-                            <Link href="/cart" className="relative p-2 hover:bg-white/5 rounded-full transition-colors text-white">
-                                <ShoppingBag className="w-6 h-6" />
-                                {cart.length > 0 && (
-                                    <span className="absolute top-0 right-0 bg-primary text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full text-white">
-                                        {cart.length}
-                                    </span>
-                                )}
-                            </Link>
+                        {!user?.isAdmin && pathname !== '/admin/login' && (
+                            <>
+                                <Link href="/wishlist" className="p-2 hover:bg-white/5 rounded-full transition-colors text-white">
+                                    <Heart className="w-6 h-6" />
+                                </Link>
+                                <Link href="/cart" className="relative p-2 hover:bg-white/5 rounded-full transition-colors text-white">
+                                    <ShoppingBag className="w-6 h-6" />
+                                    {cart.length > 0 && (
+                                        <span className="absolute top-0 right-0 bg-primary text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full text-white">
+                                            {cart.length}
+                                        </span>
+                                    )}
+                                </Link>
+                            </>
                         )}
                         <button className="md:hidden p-2 text-white">
                             <Menu className="w-6 h-6" />

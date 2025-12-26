@@ -4,56 +4,73 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Search, ExternalLink, XCircle, CheckCircle, ShoppingBag, Package, Download } from 'lucide-react';
 import OrderDetailsModal from '../../../components/OrderDetailsModal';
+import toast from 'react-hot-toast';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [page, setPage] = useState(1);
+    const [pages, setPages] = useState(1);
+    const [total, setTotal] = useState(0);
     const [filterPaid, setFilterPaid] = useState('all');
     const [filterDelivered, setFilterDelivered] = useState('all');
     const [filterStatus, setFilterStatus] = useState('all');
 
     useEffect(() => {
         fetchOrders();
-    }, []);
+    }, [page, filterPaid, filterDelivered, filterStatus]); // Fetch on change
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (page !== 1) setPage(1); // Reset to page 1 on search change
+            else fetchOrders();
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
 
     const fetchOrders = async () => {
         try {
+            setLoading(true);
             const token = localStorage.getItem('token');
-            const res = await fetch('/api/orders', {
+
+            // Build Query params
+            const params = new URLSearchParams();
+            params.append('pageNumber', page);
+            if (searchTerm) params.append('keyword', searchTerm);
+            if (filterPaid !== 'all') params.append('payment', filterPaid);
+            if (filterDelivered !== 'all') params.append('delivery', filterDelivered);
+            if (filterStatus !== 'all') params.append('status', filterStatus);
+
+            const res = await fetch(`/api/orders?${params.toString()}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             const data = await res.json();
             if (res.ok) {
-                setOrders(data);
+                setOrders(data.orders);
+                setPages(data.pages);
+                setTotal(data.total);
             } else {
                 console.error('Failed to fetch orders:', data.message);
+                toast.error('Failed to fetch orders');
             }
         } catch (error) {
             console.error('Error fetching orders:', error);
+            toast.error('Error connecting to server');
         } finally {
             setLoading(false);
         }
     };
 
-    const filteredOrders = orders.filter(order => {
-        const matchesSearch = order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            order.user?.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesPaid = filterPaid === 'all' ? true : filterPaid === 'paid' ? order.isPaid : !order.isPaid;
-        const matchesDelivered = filterDelivered === 'all' ? true : filterDelivered === 'delivered' ? order.isDelivered : !order.isDelivered;
-        const matchesStatus = filterStatus === 'all' ? true : filterStatus === 'active' ? !order.isCancelled : order.isCancelled;
-
-        return matchesSearch && matchesPaid && matchesDelivered && matchesStatus;
-    });
-
     const handleExport = () => {
         const headers = ['Order ID', 'Customer', 'Email', 'Phone', 'Date', 'Status', 'Payment', 'Delivery', 'Total'];
         const csvContent = [
             headers.join(','),
-            ...filteredOrders.map(order => [
+            ...orders.map(order => [
                 order._id,
                 `"${order.user?.name || 'Guest'}"`,
                 order.user?.email || '',
@@ -75,6 +92,7 @@ const AdminOrders = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        toast.success('Orders exported successfully');
     };
 
     return (
@@ -107,7 +125,7 @@ const AdminOrders = () => {
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="text-gray-400 text-sm">
-                                Total Orders: <span className="text-white font-bold">{filteredOrders.length}</span>
+                                Total Orders: <span className="text-white font-bold">{total}</span>
                             </div>
                             <button
                                 onClick={handleExport}
@@ -171,12 +189,12 @@ const AdminOrders = () => {
                                     <tr>
                                         <td colSpan="8" className="p-8 text-center text-gray-500">Loading orders...</td>
                                     </tr>
-                                ) : filteredOrders.length === 0 ? (
+                                ) : orders.length === 0 ? (
                                     <tr>
                                         <td colSpan="8" className="p-8 text-center text-gray-500">No orders found matching your search.</td>
                                     </tr>
                                 ) : (
-                                    filteredOrders.map(order => (
+                                    orders.map(order => (
                                         <tr key={order._id} className="hover:bg-white/5 transition-colors">
                                             <td className="p-4 font-mono text-sm text-primary">{order._id.substring(0, 10)}...</td>
                                             <td className="p-4 text-white font-medium">{order.user?.name || 'Unknown User'}</td>
@@ -231,6 +249,29 @@ const AdminOrders = () => {
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Pagination */}
+                    {pages > 1 && (
+                        <div className="p-4 border-t border-white/10 flex justify-center items-center gap-2">
+                            <button
+                                onClick={() => setPage(page - 1)}
+                                disabled={page === 1}
+                                className="px-3 py-1 bg-dark-900 border border-white/10 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/5"
+                            >
+                                Previous
+                            </button>
+                            <span className="text-gray-400 text-sm">
+                                Page <span className="text-white font-bold">{page}</span> of {pages}
+                            </span>
+                            <button
+                                onClick={() => setPage(page + 1)}
+                                disabled={page === pages}
+                                className="px-3 py-1 bg-dark-900 border border-white/10 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/5"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <OrderDetailsModal

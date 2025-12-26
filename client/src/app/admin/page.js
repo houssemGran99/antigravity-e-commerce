@@ -92,7 +92,9 @@ const AdminDashboard = () => {
                 setProducts([]);
             }
 
-            if (Array.isArray(ordersData)) {
+            if (ordersData.orders && Array.isArray(ordersData.orders)) {
+                setOrders(ordersData.orders);
+            } else if (Array.isArray(ordersData)) {
                 setOrders(ordersData);
             } else {
                 console.error('Orders API returned invalid data:', ordersData);

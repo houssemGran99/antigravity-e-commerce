@@ -1,19 +1,24 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
-import { User, Mail, Shield, LogOut, Phone, Save, Edit2, X } from 'lucide-react';
+import { User, Mail, Shield, LogOut, Phone, Save, Edit2, X, Lock } from 'lucide-react';
+import toast from 'react-hot-toast';
 import ConfirmModal from '../../components/ConfirmModal';
 import ProtectedRoute from '../../components/ProtectedRoute';
 
 const ProfileContent = () => {
     const { user, logout } = useAuth();
+    const router = useRouter();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [orderToCancel, setOrderToCancel] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
     const [activeTab, setActiveTab] = useState('profile');
 
     const [address, setAddress] = useState({ street: '', city: '', postalCode: '', country: '' });
@@ -75,6 +80,52 @@ const ProfileContent = () => {
         } finally {
             setIsModalOpen(false);
             setOrderToCancel(null);
+        }
+    };
+
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        if (passwords.new !== passwords.confirm) {
+            toast.error("New passwords don't match");
+            return;
+        }
+        if (passwords.new.length < 6) {
+            toast.error("Password must be at least 6 characters");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch('/api/users/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    password: passwords.new,
+                    currentPassword: passwords.current
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                toast.success('Password updated. Please login again.');
+                setIsChangingPassword(false);
+                setPasswords({ current: '', new: '', confirm: '' });
+
+                // Manual logout to avoid redirect to home
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                // Force hard redirect to ensure state is cleared and we go to admin login
+                window.location.href = '/admin/login';
+            } else {
+                toast.error(data.message || 'Failed to update password');
+            }
+        } catch (error) {
+            console.error('Password update error:', error);
+            toast.error('Error updating password');
         }
     };
 
@@ -193,40 +244,100 @@ const ProfileContent = () => {
                                             </p>
                                         </div>
 
-                                        <div className="bg-dark-900/50 p-4 rounded-xl border border-white/5">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <div className="flex items-center gap-2 text-primary text-sm font-semibold">
-                                                    <Phone className="w-4 h-4" /> Phone Number
+                                        {!user.isAdmin && (
+                                            <div className="bg-dark-900/50 p-4 rounded-xl border border-white/5">
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <div className="flex items-center gap-2 text-primary text-sm font-semibold">
+                                                        <Phone className="w-4 h-4" /> Phone Number
+                                                    </div>
+                                                    {!isEditing && (
+                                                        <button onClick={() => setIsEditing(true)} className="text-gray-400 hover:text-white transition-colors">
+                                                            <Edit2 className="w-3 h-3" />
+                                                        </button>
+                                                    )}
                                                 </div>
-                                                {!isEditing && (
-                                                    <button onClick={() => setIsEditing(true)} className="text-gray-400 hover:text-white transition-colors">
-                                                        <Edit2 className="w-3 h-3" />
-                                                    </button>
+                                                {isEditing ? (
+                                                    <form onSubmit={handleUpdateProfile} className="flex gap-2">
+                                                        <input
+                                                            type="tel"
+                                                            value={phoneNumber}
+                                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                                            className="w-full bg-dark-800 border border-white/10 rounded px-2 py-1 text-white text-sm focus:outline-none focus:border-primary"
+                                                            placeholder="Enter phone number"
+                                                            autoFocus
+                                                        />
+                                                        <button type="submit" className="text-green-500 hover:text-green-400">
+                                                            <Save className="w-4 h-4" />
+                                                        </button>
+                                                        <button type="button" onClick={() => setIsEditing(false)} className="text-gray-500 hover:text-gray-400">
+                                                            <X className="w-4 h-4" />
+                                                        </button>
+                                                    </form>
+                                                ) : (
+                                                    <p className="text-gray-300 text-sm">
+                                                        {user.phone || 'Not set'}
+                                                    </p>
                                                 )}
                                             </div>
-                                            {isEditing ? (
-                                                <form onSubmit={handleUpdateProfile} className="flex gap-2">
-                                                    <input
-                                                        type="tel"
-                                                        value={phoneNumber}
-                                                        onChange={(e) => setPhoneNumber(e.target.value)}
-                                                        className="w-full bg-dark-800 border border-white/10 rounded px-2 py-1 text-white text-sm focus:outline-none focus:border-primary"
-                                                        placeholder="Enter phone number"
-                                                        autoFocus
-                                                    />
-                                                    <button type="submit" className="text-green-500 hover:text-green-400">
-                                                        <Save className="w-4 h-4" />
+                                        )}
+
+                                        {/* Change Password Section (Admin Only) */}
+                                        {user.isAdmin && (
+                                            <div className="bg-dark-900/50 p-4 rounded-xl border border-white/5">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <div className="flex items-center gap-2 text-primary text-sm font-semibold">
+                                                        <Lock className="w-4 h-4" /> Security
+                                                    </div>
+                                                    <button
+                                                        onClick={() => setIsChangingPassword(!isChangingPassword)}
+                                                        className="text-gray-400 hover:text-white transition-colors text-xs border border-white/10 px-2 py-1 rounded"
+                                                    >
+                                                        {isChangingPassword ? 'Cancel' : 'Change Password'}
                                                     </button>
-                                                    <button type="button" onClick={() => setIsEditing(false)} className="text-gray-500 hover:text-gray-400">
-                                                        <X className="w-4 h-4" />
-                                                    </button>
-                                                </form>
-                                            ) : (
-                                                <p className="text-gray-300 text-sm">
-                                                    {user.phone || 'Not set'}
-                                                </p>
-                                            )}
-                                        </div>
+                                                </div>
+
+                                                {isChangingPassword && (
+                                                    <form onSubmit={handleChangePassword} className="space-y-3">
+                                                        <div>
+                                                            <input
+                                                                type="password"
+                                                                placeholder="Current Password"
+                                                                value={passwords.current}
+                                                                onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
+                                                                className="w-full bg-dark-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-primary"
+                                                                required
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <input
+                                                                type="password"
+                                                                placeholder="New Password"
+                                                                value={passwords.new}
+                                                                onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
+                                                                className="w-full bg-dark-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-primary"
+                                                                required
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <input
+                                                                type="password"
+                                                                placeholder="Confirm New Password"
+                                                                value={passwords.confirm}
+                                                                onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
+                                                                className="w-full bg-dark-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-primary"
+                                                                required
+                                                            />
+                                                        </div>
+                                                        <button
+                                                            type="submit"
+                                                            className="w-full bg-primary hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition-colors text-sm"
+                                                        >
+                                                            Update Password
+                                                        </button>
+                                                    </form>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <button
@@ -277,15 +388,30 @@ const ProfileContent = () => {
                                                 </div>
 
                                                 <div className="space-y-2 mb-4">
-                                                    {order.orderItems.map((item, idx) => (
-                                                        <div key={idx} className="flex justify-between items-center text-sm">
-                                                            <span className="text-gray-300">
-                                                                <span className="text-gray-500 mr-2">{item.qty}x</span>
-                                                                {item.name}
-                                                            </span>
-                                                            <span className="text-gray-400">{item.price} TND</span>
-                                                        </div>
-                                                    ))}
+                                                    {(() => {
+                                                        const aggregateOrderItems = (items) => {
+                                                            const grouped = items.reduce((acc, item) => {
+                                                                const key = item.product || item._id || item.name;
+                                                                if (!acc[key]) {
+                                                                    acc[key] = { ...item, qty: Number(item.qty || 1) };
+                                                                } else {
+                                                                    acc[key].qty += Number(item.qty || 1);
+                                                                }
+                                                                return acc;
+                                                            }, {});
+                                                            return Object.values(grouped);
+                                                        };
+
+                                                        return aggregateOrderItems(order.orderItems).map((item, idx) => (
+                                                            <div key={idx} className="flex justify-between items-center text-sm">
+                                                                <span className="text-gray-300">
+                                                                    <span className="text-gray-500 mr-2">{item.qty}x</span>
+                                                                    {item.name}
+                                                                </span>
+                                                                <span className="text-gray-400">{(item.price * item.qty).toFixed(2)} TND</span>
+                                                            </div>
+                                                        ));
+                                                    })()}
                                                 </div>
 
                                                 <div className="border-t border-white/10 pt-4 flex justify-between items-center">

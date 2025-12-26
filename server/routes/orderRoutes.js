@@ -4,6 +4,7 @@ const Order = require('../models/Order');
 const Notification = require('../models/Notification');
 const { protect, admin } = require('../middleware/authMiddleware');
 const sendEmail = require('../utils/sendEmail');
+const Product = require('../models/Product');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -36,6 +37,15 @@ router.post('/', protect, async (req, res) => {
         });
 
         const createdOrder = await order.save();
+
+        // Decrement Product Stock immediately on order creation
+        for (const item of orderItems) {
+            const product = await Product.findById(item.product);
+            if (product) {
+                product.inStock = product.inStock - item.qty;
+                await product.save();
+            }
+        }
 
         // 1. Create In-App Notification
         try {
@@ -80,9 +90,64 @@ router.get('/myorders', protect, async (req, res) => {
 // @desc    Get all orders
 // @route   GET /api/orders
 // @access  Private/Admin
+const User = require('../models/User');
+
+// @desc    Create new order
+// ... (lines 9-82 remains same, skipping for brevity in replacement if possible, but I must match TargetContent exactly)
+
+// @desc    Get all orders
+// @route   GET /api/orders
+// @access  Private/Admin
 router.get('/', protect, admin, async (req, res) => {
-    const orders = await Order.find({}).populate('user', 'id name email').sort({ createdAt: -1 });
-    res.json(orders);
+    const pageSize = 10;
+    const page = Number(req.query.pageNumber) || 1;
+    const keyword = req.query.keyword || '';
+
+    // Build query conditions
+    const query = {};
+
+    // Search Logic
+    if (keyword) {
+        // Find users matching name
+        const userIds = await User.find({ name: { $regex: keyword, $options: 'i' } }).distinct('_id');
+
+        query.$or = [
+            { user: { $in: userIds } },
+            {
+                $expr: {
+                    $regexMatch: {
+                        input: { $toString: "$_id" },
+                        regex: keyword,
+                        options: "i"
+                    }
+                }
+            }
+        ];
+    }
+
+    // Filter Logic
+    if (req.query.payment && req.query.payment !== 'all') {
+        query.isPaid = req.query.payment === 'paid';
+    }
+    if (req.query.delivery && req.query.delivery !== 'all') {
+        query.isDelivered = req.query.delivery === 'delivered';
+    }
+    if (req.query.status && req.query.status !== 'all') {
+        if (req.query.status === 'cancelled') {
+            query.isCancelled = true;
+        } else {
+            query.isCancelled = false; // 'active'
+        }
+    }
+
+    const count = await Order.countDocuments(query);
+    const orders = await Order.find(query)
+        .populate('user', 'id name email')
+        .sort({ createdAt: -1 })
+        .limit(pageSize)
+        .skip(pageSize * (page - 1));
+
+    res.json({ orders, page, pages: Math.ceil(count / pageSize), total: count });
 });
 
 // @desc    Get order by ID

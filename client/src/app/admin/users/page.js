@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Trash2, Search, Users } from 'lucide-react';
+import { ArrowLeft, Search, Users } from 'lucide-react';
 
 export default function AdminUsers() {
     const [users, setUsers] = useState([]);
@@ -37,16 +37,7 @@ export default function AdminUsers() {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this user?')) {
-            try {
-                await fetch(`/api/users/${id}`, { method: 'DELETE' });
-                setUsers(users.filter(user => user._id !== id));
-            } catch (error) {
-                console.error('Error deleting user:', error);
-            }
-        }
-    };
+
 
     const filteredUsers = users.filter(user =>
         !user.isAdmin &&
@@ -89,9 +80,9 @@ export default function AdminUsers() {
                                 <tr>
                                     <th className="p-4">User</th>
                                     <th className="p-4">Email</th>
+                                    <th className="p-4">Phone</th>
                                     <th className="p-4">Role</th>
                                     <th className="p-4">Joined</th>
-                                    <th className="p-4 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
@@ -118,6 +109,7 @@ export default function AdminUsers() {
                                             </div>
                                         </td>
                                         <td className="p-4">{user.email}</td>
+                                        <td className="p-4 text-gray-400">{user.phone || '-'}</td>
                                         <td className="p-4">
                                             <span className={`px-2 py-1 rounded text-xs font-bold ${user.isAdmin
                                                 ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
@@ -128,17 +120,6 @@ export default function AdminUsers() {
                                         </td>
                                         <td className="p-4 text-sm">
                                             {new Date(user.createdAt).toLocaleDateString()}
-                                        </td>
-                                        <td className="p-4 flex justify-center">
-                                            {!user.isAdmin && (
-                                                <button
-                                                    onClick={() => handleDelete(user._id)}
-                                                    className="p-2 hover:bg-red-500/10 text-red-500 rounded-lg transition-colors"
-                                                    title="Delete User"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            )}
                                         </td>
                                     </tr>
                                 ))}

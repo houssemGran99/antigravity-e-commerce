@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import AddToCartButton from '../../../components/AddToCartButton';
 import ProductCard from '../../../components/ProductCard';
 import ProductImage from '../../../components/ProductImage';
+import ReviewSection from '../../../components/ReviewSection';
 // We use a simple fetch to get data
 
 async function getProduct(id) {
@@ -21,16 +22,13 @@ async function getProduct(id) {
     }
 }
 
-async function getSimilarProducts(category, currentId) {
-    if (!category) return [];
+async function getSimilarProducts(id) {
+    if (!id) return [];
     try {
-        // Handle if category is object or string ID
-        const categoryId = category._id || category;
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://antigravity-e-commerce-uv1a.vercel.app';
-        const res = await fetch(`${apiUrl}/api/products?category=${categoryId}`, { cache: 'no-store' });
+        const res = await fetch(`${apiUrl}/api/products/${id}/related`, { cache: 'no-store' });
         if (!res.ok) return [];
-        const products = await res.json();
-        return products.filter(p => p._id !== currentId).slice(0, 4); // Limit to 4 similar items
+        return res.json();
     } catch (e) {
         console.error('Error fetching similar products:', e);
         return [];
@@ -47,7 +45,7 @@ export async function generateMetadata({ params }) {
 export default async function ProductPage({ params }) {
     const { id } = await params;
     const product = await getProduct(id);
-    const similarProducts = product ? await getSimilarProducts(product.category, product._id) : [];
+    const similarProducts = product ? await getSimilarProducts(id) : [];
 
     if (!product) {
         return (
@@ -96,6 +94,14 @@ export default async function ProductPage({ params }) {
                         <AddToCartButton product={product} />
                     </div>
                 </div>
+
+                {/* Reviews Section */}
+                <ReviewSection
+                    productId={product._id}
+                    reviews={product.reviews}
+                    rating={product.rating}
+                    numReviews={product.numReviews}
+                />
 
                 {/* Similar Products Section */}
                 {similarProducts.length > 0 && (
