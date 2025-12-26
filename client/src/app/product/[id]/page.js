@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import AddToCartButton from '../../../components/AddToCartButton';
 import ProductCard from '../../../components/ProductCard';
 import ProductImage from '../../../components/ProductImage';
+import ReviewSection from '../../../components/ReviewSection';
 // We use a simple fetch to get data
 
 async function getProduct(id) {
@@ -96,6 +97,14 @@ export default async function ProductPage({ params }) {
                         <AddToCartButton product={product} />
                     </div>
                 </div>
+
+                {/* Reviews Section */}
+                <ReviewSection
+                    productId={product._id}
+                    reviews={product.reviews}
+                    rating={product.rating}
+                    numReviews={product.numReviews}
+                />
 
                 {/* Similar Products Section */}
                 {similarProducts.length > 0 && (

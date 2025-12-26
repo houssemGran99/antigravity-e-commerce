@@ -2,7 +2,7 @@
 
 import React, { useContext } from 'react';
 import Link from 'next/link';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Star } from 'lucide-react';
 import { CartState } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,6 +28,19 @@ const ProductCard = ({ product }) => {
                         <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors">{product.name}</h3>
                     </div>
                     <span className="bg-white/10 px-2 py-1 rounded text-sm font-semibold text-white">{product.price} TND</span>
+                </div>
+
+                {/* Rating */}
+                <div className="flex items-center gap-1 mb-2">
+                    <div className="flex text-yellow-500">
+                        {[...Array(5)].map((_, i) => (
+                            <Star
+                                key={i}
+                                className={`w-3 h-3 ${i < Math.round(product.rating || 0) ? 'fill-current' : 'text-gray-600'}`}
+                            />
+                        ))}
+                    </div>
+                    <span className="text-xs text-gray-500">({product.numReviews || 0} reviews)</span>
                 </div>
 
                 <p className="text-gray-400 text-sm mb-4 line-clamp-2">{product.description}</p>
