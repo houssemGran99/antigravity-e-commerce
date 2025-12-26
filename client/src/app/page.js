@@ -18,7 +18,15 @@ async function getProducts() {
 }
 
 export default async function Home() {
-  const products = await getProducts();
+  const productsData = await getProducts();
+
+  let products = [];
+  if (Array.isArray(productsData)) {
+    products = productsData;
+  } else if (productsData && Array.isArray(productsData.products)) {
+    products = productsData.products;
+  }
+
   const featuredProducts = products.slice(0, 3);
 
   return (

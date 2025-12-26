@@ -57,6 +57,7 @@ router.post('/google', async (req, res) => {
     try {
         const { token } = req.body;
         console.log('Received login request at', new Date().toISOString());
+        console.log('Using Client ID:', process.env.GOOGLE_CLIENT_ID ? process.env.GOOGLE_CLIENT_ID.substring(0, 10) + '...' : 'UNDEFINED');
 
         // Verify Google Token
         const ticket = await client.verifyIdToken({
