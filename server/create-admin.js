@@ -14,13 +14,13 @@ const createAdmin = async () => {
             console.log('Admin user already exists');
             // Update password just in case
             const salt = await bcrypt.genSalt(10);
-            admin.password = await bcrypt.hash('adminpassword', salt);
+            admin.password = await bcrypt.hash('admin', salt);
             admin.isAdmin = true;
             await admin.save();
-            console.log('Admin password updated to: adminpassword');
+            console.log('Admin password updated to: admin');
         } else {
             const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash('adminpassword', salt);
+            const hashedPassword = await bcrypt.hash('admin', salt);
 
             admin = new User({
                 username: 'admin',

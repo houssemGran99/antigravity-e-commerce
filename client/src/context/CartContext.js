@@ -7,7 +7,7 @@ export const CartState = createContext();
 
 const CartContext = ({ children }) => {
     const [cart, setCart] = useState([]);
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const [isInitialized, setIsInitialized] = useState(false);
     const prevUser = useRef(user);
 
@@ -24,6 +24,7 @@ const CartContext = ({ children }) => {
     useEffect(() => {
         const loadCart = async () => {
             if (user) {
+                if (user.isAdmin) return setIsInitialized(true);
                 // Fetch from backend if logged in
                 try {
                     const token = localStorage.getItem('token');
@@ -44,6 +45,9 @@ const CartContext = ({ children }) => {
 
                     } else {
                         console.error('CartContext: Failed to load backend cart', res.status);
+                        if (res.status === 401) {
+                            logout();
+                        }
                     }
                 } catch (error) {
                     console.error('Failed to load cart', error);
@@ -60,44 +64,44 @@ const CartContext = ({ children }) => {
         loadCart();
     }, [user]);
 
-    // Sync on transition to logged in (Login action)
-    useEffect(() => {
-        const syncCart = async () => {
-            if (user && isInitialized) {
-                const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
-                if (localCart.length > 0) {
-                    try {
-                        const token = localStorage.getItem('token');
-                        const res = await fetch('/api/cart/sync', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${token}`
-                            },
-                            body: JSON.stringify({ items: localCart })
-                        });
-                        if (res.ok) {
-                            const data = await res.json();
-                            const flatCart = [];
-                            data.items.forEach(item => {
-                                if (item.product) {
-                                    for (let i = 0; i < item.quantity; i++) {
-                                        flatCart.push(item.product);
-                                    }
+    const syncCart = async () => {
+        if (user && isInitialized) {
+            if (user.isAdmin) return;
+            const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
+            if (localCart.length > 0) {
+                try {
+                    const token = localStorage.getItem('token');
+                    const res = await fetch('/api/cart/sync', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ items: localCart })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const flatCart = [];
+                        data.items.forEach(item => {
+                            if (item.product) {
+                                for (let i = 0; i < item.quantity; i++) {
+                                    flatCart.push(item.product);
                                 }
-                            });
-                            setCart(flatCart);
-                            localStorage.removeItem('cart');
-                        } else {
-                            console.error('CartContext: Sync failed status', res.status);
-                        }
-                    } catch (error) {
-                        console.error('Sync failed', error);
+                            }
+                        });
+                        setCart(flatCart);
+                        localStorage.removeItem('cart');
+                    } else {
+                        console.error('CartContext: Sync failed status', res.status);
                     }
+                } catch (error) {
+                    console.error('Sync failed', error);
                 }
             }
-        };
+        }
+    };
 
+    useEffect(() => {
         if (user && isInitialized) {
             syncCart();
         }

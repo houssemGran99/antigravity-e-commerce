@@ -18,8 +18,8 @@ router.get('/', protect, async (req, res) => {
 
         res.json(cart);
     } catch (error) {
-        console.error('Get Cart Error:', error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error(`Get Cart Error for user ${req.user?._id}:`, error);
+        res.status(500).json({ message: 'Server Error', error: error.message });
     }
 });
 

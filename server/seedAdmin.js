@@ -9,7 +9,7 @@ const seedAdmin = async () => {
         console.log('MongoDB Connected');
 
         const username = 'admin';
-        const hashedPassword = await bcrypt.hash('admin123', 10);
+        const hashedPassword = await bcrypt.hash('admin', 10);
 
         const adminUser = await User.findOneAndUpdate(
             { username },
