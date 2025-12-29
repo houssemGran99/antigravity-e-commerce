@@ -24,17 +24,17 @@ const AddToCartButton = ({ product }) => {
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-4 bg-dark-900/50 p-2 rounded-xl border border-white/5 w-fit">
+            <div className="flex items-center gap-4 bg-muted p-2 rounded-xl border border-border w-fit">
                 <button
                     onClick={decrement}
-                    className="w-10 h-10 flex items-center justify-center bg-dark-800 hover:bg-white/10 rounded-lg text-white font-bold transition-colors"
+                    className="w-10 h-10 flex items-center justify-center bg-card hover:bg-background rounded-lg text-foreground font-bold transition-colors shadow-sm"
                 >
                     -
                 </button>
-                <span className="text-xl font-bold text-white w-8 text-center">{quantity}</span>
+                <span className="text-xl font-bold text-foreground w-8 text-center">{quantity}</span>
                 <button
                     onClick={increment}
-                    className="w-10 h-10 flex items-center justify-center bg-dark-800 hover:bg-white/10 rounded-lg text-white font-bold transition-colors"
+                    className="w-10 h-10 flex items-center justify-center bg-card hover:bg-background rounded-lg text-foreground font-bold transition-colors shadow-sm"
                 >
                     +
                 </button>

@@ -32,7 +32,7 @@ router.post('/admin-login', async (req, res) => {
         const sessionToken = jwt.sign(
             { id: user._id, isAdmin: user.isAdmin },
             process.env.JWT_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '2d' }
         );
 
         res.status(200).json({
@@ -100,7 +100,7 @@ router.post('/google', async (req, res) => {
         const sessionToken = jwt.sign(
             { id: user._id, isAdmin: user.isAdmin },
             process.env.JWT_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '2d' }
         );
 
         res.status(200).json({

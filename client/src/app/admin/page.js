@@ -85,7 +85,9 @@ const AdminDashboard = () => {
             const productsData = await productsRes.json();
             const ordersData = await ordersRes.json();
 
-            if (Array.isArray(productsData)) {
+            if (productsData.products && Array.isArray(productsData.products)) {
+                setProducts(productsData.products);
+            } else if (Array.isArray(productsData)) {
                 setProducts(productsData);
             } else {
                 console.error('Products API returned invalid data:', productsData);
@@ -123,7 +125,7 @@ const AdminDashboard = () => {
 
     if (loading) {
         return (
-            <div className="min-h-[50vh] flex items-center justify-center text-white">
+            <div className="min-h-[50vh] flex items-center justify-center text-foreground">
                 <div className="text-2xl">Loading Dashboard...</div>
             </div>
         );
@@ -133,21 +135,21 @@ const AdminDashboard = () => {
         <div className="pt-10 pb-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-4xl font-bold text-white">Admin Dashboard</h1>
+                    <h1 className="text-4xl font-bold text-foreground">Admin Dashboard</h1>
                     <div className="flex gap-4">
-                        <Link href="/admin/brands" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                        <Link href="/admin/brands" className="bg-card hover:bg-muted border border-border text-foreground font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
                             <Tag className="w-5 h-5" />
                             Manage Brands
                         </Link>
-                        <Link href="/admin/users" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                        <Link href="/admin/users" className="bg-card hover:bg-muted border border-border text-foreground font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
                             <Users className="w-5 h-5" />
                             Manage Users
                         </Link>
-                        <Link href="/admin/orders" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                        <Link href="/admin/orders" className="bg-card hover:bg-muted border border-border text-foreground font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
                             <ShoppingBag className="w-5 h-5" />
                             Manage Orders
                         </Link>
-                        <Link href="/admin/categories" className="bg-dark-800 hover:bg-dark-700 border border-white/10 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
+                        <Link href="/admin/categories" className="bg-card hover:bg-muted border border-border text-foreground font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
                             <Layers className="w-5 h-5" />
                             Manage Categories
                         </Link>
@@ -160,8 +162,8 @@ const AdminDashboard = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     {/* Revenue Trends Chart */}
-                    <div className="bg-dark-800 rounded-2xl p-6 border border-white/5">
-                        <h2 className="text-xl font-bold text-white mb-6">Revenue Trends (Last 7 Days)</h2>
+                    <div className="bg-card rounded-2xl p-6 border border-border">
+                        <h2 className="text-xl font-bold text-foreground mb-6">Revenue Trends (Last 7 Days)</h2>
                         <div className="h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={revenueData}>
@@ -189,12 +191,13 @@ const AdminDashboard = () => {
                                     <Tooltip
                                         cursor={{ stroke: '#10b981', strokeWidth: 2 }}
                                         contentStyle={{
-                                            backgroundColor: '#1a1a1a',
-                                            border: '1px solid #333',
+                                            backgroundColor: 'var(--card)',
+                                            borderColor: 'var(--border)',
+                                            color: 'var(--foreground)',
                                             borderRadius: '12px',
                                             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
                                         }}
-                                        itemStyle={{ color: '#fff', fontWeight: 'bold' }}
+                                        itemStyle={{ color: 'var(--foreground)', fontWeight: 'bold' }}
                                         formatter={(value) => [`${value.toFixed(2)} TND`, 'Revenue']}
                                     />
                                     <Area
@@ -211,8 +214,8 @@ const AdminDashboard = () => {
                     </div>
 
                     {/* Top Selling Products */}
-                    <div className="bg-dark-800 rounded-2xl p-6 border border-white/5">
-                        <h2 className="text-xl font-bold text-white mb-6">Top Selling Products</h2>
+                    <div className="bg-card rounded-2xl p-6 border border-border">
+                        <h2 className="text-xl font-bold text-foreground mb-6">Top Selling Products</h2>
                         <div className="h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart layout="vertical" data={topProductsData}>
@@ -229,14 +232,15 @@ const AdminDashboard = () => {
                                         tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 15)}...` : value}
                                     />
                                     <Tooltip
-                                        cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                                        cursor={{ fill: 'var(--muted)' }}
                                         contentStyle={{
-                                            backgroundColor: '#1a1a1a',
-                                            border: '1px solid #333',
+                                            backgroundColor: 'var(--card)',
+                                            borderColor: 'var(--border)',
+                                            color: 'var(--foreground)',
                                             borderRadius: '12px',
                                             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
                                         }}
-                                        itemStyle={{ color: '#fff', fontWeight: 'bold' }}
+                                        itemStyle={{ color: 'var(--foreground)', fontWeight: 'bold' }}
                                         formatter={(value) => [`${value} Sold`, 'Sales']}
                                     />
                                     <Bar dataKey="sales" fill="#8b5cf6" radius={[0, 4, 4, 0]} barSize={20} />
@@ -245,8 +249,8 @@ const AdminDashboard = () => {
                         </div>
                     </div>
                     {/* Products by Quantity Chart */}
-                    <div className="bg-dark-800 rounded-2xl p-6 border border-white/5">
-                        <h2 className="text-xl font-bold text-white mb-6">Inventory Status</h2>
+                    <div className="bg-card rounded-2xl p-6 border border-border">
+                        <h2 className="text-xl font-bold text-foreground mb-6">Inventory Status</h2>
                         <div className="h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={[...products].sort((a, b) => (b.inStock || 0) - (a.inStock || 0)).slice(0, 10)}>
@@ -273,16 +277,17 @@ const AdminDashboard = () => {
                                         axisLine={false}
                                     />
                                     <Tooltip
-                                        cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                                        cursor={{ fill: 'var(--muted)' }}
                                         contentStyle={{
-                                            backgroundColor: '#1a1a1a',
-                                            border: '1px solid #333',
+                                            backgroundColor: 'var(--card)',
+                                            borderColor: 'var(--border)',
+                                            color: 'var(--foreground)',
                                             borderRadius: '12px',
                                             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
                                         }}
-                                        itemStyle={{ color: '#fff', fontWeight: 'bold' }}
+                                        itemStyle={{ color: 'var(--foreground)', fontWeight: 'bold' }}
                                         formatter={(value) => [`${value} Units`, 'In Stock']}
-                                        labelStyle={{ color: '#aaa', marginBottom: '5px' }}
+                                        labelStyle={{ color: 'var(--muted-foreground)', marginBottom: '5px' }}
                                     />
                                     <Bar
                                         dataKey="inStock"
@@ -297,8 +302,8 @@ const AdminDashboard = () => {
                     </div>
 
                     {/* Order Status Chart */}
-                    <div className="bg-dark-800 rounded-2xl p-6 border border-white/5">
-                        <h2 className="text-xl font-bold text-white mb-6">Order Statistics</h2>
+                    <div className="bg-card rounded-2xl p-6 border border-border">
+                        <h2 className="text-xl font-bold text-foreground mb-6">Order Statistics</h2>
                         <div className="h-[300px] w-full flex items-center justify-center">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
@@ -321,7 +326,7 @@ const AdminDashboard = () => {
                                             const x = cx + radius * Math.cos(-midAngle * RADIAN);
                                             const y = cy + radius * Math.sin(-midAngle * RADIAN);
                                             return percent > 0.1 ? (
-                                                <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-xs font-bold">
+                                                <text x={x} y={y} fill="var(--foreground)" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-xs font-bold">
                                                     {`${(percent * 100).toFixed(0)}%`}
                                                 </text>
                                             ) : null;
@@ -334,24 +339,25 @@ const AdminDashboard = () => {
                                             { name: 'Cancelled', color: '#ef4444' }, // Red
                                             { name: 'Pending', color: '#eab308' } // Yellow
                                         ].map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} stroke="rgba(0,0,0,0.5)" strokeWidth={1} />
+                                            <Cell key={`cell-${index}`} fill={entry.color} stroke="var(--card)" strokeWidth={1} />
                                         ))}
                                     </Pie>
                                     <Tooltip
                                         contentStyle={{
-                                            backgroundColor: '#1a1a1a',
-                                            border: '1px solid #333',
+                                            backgroundColor: 'var(--card)',
+                                            borderColor: 'var(--border)',
+                                            color: 'var(--foreground)',
                                             borderRadius: '12px',
                                             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
                                         }}
-                                        itemStyle={{ color: '#fff', fontWeight: 'bold' }}
+                                        itemStyle={{ color: 'var(--foreground)', fontWeight: 'bold' }}
                                         formatter={(value) => [`${value} Orders`, 'Count']}
                                     />
                                     <Legend
                                         verticalAlign="bottom"
                                         height={36}
                                         iconType="circle"
-                                        formatter={(value) => <span className="text-gray-400 font-medium ml-1">{value}</span>}
+                                        formatter={(value) => <span className="text-muted-foreground font-medium ml-1">{value}</span>}
                                     />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -365,12 +371,12 @@ const AdminDashboard = () => {
                         placeholder="Search products..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="bg-dark-800 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors flex-1"
+                        className="bg-card border border-border rounded-xl py-3 px-4 text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary transition-colors flex-1"
                     />
                     <select
                         value={filterCategory}
                         onChange={(e) => setFilterCategory(e.target.value)}
-                        className="bg-dark-800 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-primary transition-colors md:w-64"
+                        className="bg-card border border-border rounded-xl py-3 px-4 text-foreground focus:outline-none focus:border-primary transition-colors md:w-64"
                     >
                         <option value="">All Categories</option>
                         {categories.map(cat => (
@@ -379,10 +385,10 @@ const AdminDashboard = () => {
                     </select>
                 </div>
 
-                <div className="bg-dark-800 rounded-2xl border border-white/5 overflow-hidden">
+                <div className="bg-card rounded-2xl border border-border overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left text-gray-400">
-                            <thead className="bg-dark-900/50 text-white uppercase text-sm font-bold">
+                        <table className="w-full text-left text-muted-foreground">
+                            <thead className="bg-muted/50 text-foreground uppercase text-sm font-bold">
                                 <tr>
                                     <th className="p-6">Product</th>
                                     <th className="p-6">Brand</th>
@@ -390,26 +396,26 @@ const AdminDashboard = () => {
                                     <th className="p-6 text-center">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5">
+                            <tbody className="divide-y divide-border">
                                 {filteredProducts.map((product) => (
-                                    <tr key={product._id} className="hover:bg-white/5 transition-colors">
+                                    <tr key={product._id} className="hover:bg-muted/50 transition-colors">
                                         <td className="p-6 flex items-center gap-4">
-                                            <div className="w-16 h-16 rounded-lg overflow-hidden bg-dark-900 border border-white/5">
+                                            <div className="w-16 h-16 rounded-lg overflow-hidden bg-background border border-border">
                                                 <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
                                             </div>
-                                            <span className="font-bold text-white text-lg">{product.name}</span>
+                                            <span className="font-bold text-foreground text-lg">{product.name}</span>
                                         </td>
                                         <td className="p-6">{product.brand?.name || product.brand}</td>
-                                        <td className="p-6 font-mono text-white">{product.price} TND</td>
+                                        <td className="p-6 font-mono text-foreground">{product.price} TND</td>
                                         <td className="p-6">
                                             <div className="flex items-center justify-center gap-2">
-                                                <Link href={`/product/${product._id}`} className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-colors" title="View">
+                                                <Link href={`/product/${product._id}`} className="p-2 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors" title="View" aria-label={`View ${product.name}`}>
                                                     <Eye className="w-5 h-5" />
                                                 </Link>
-                                                <Link href={`/admin/edit/${product._id}`} className="p-2 hover:bg-blue-500/10 rounded-lg text-blue-400 hover:text-blue-300 transition-colors" title="Edit">
+                                                <Link href={`/admin/edit/${product._id}`} className="p-2 hover:bg-blue-500/10 rounded-lg text-blue-400 hover:text-blue-300 transition-colors" title="Edit" aria-label={`Edit ${product.name}`}>
                                                     <Edit className="w-5 h-5" />
                                                 </Link>
-                                                <button onClick={() => handleDelete(product._id)} className="p-2 hover:bg-red-500/10 rounded-lg text-red-400 hover:text-red-300 transition-colors" title="Delete">
+                                                <button onClick={() => handleDelete(product._id)} className="p-2 hover:bg-red-500/10 rounded-lg text-red-400 hover:text-red-300 transition-colors" title="Delete" aria-label={`Delete ${product.name}`}>
                                                     <Trash2 className="w-5 h-5" />
                                                 </button>
                                             </div>

@@ -1,6 +1,7 @@
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Providers } from "../providers";
+import { ThemeProvider } from "../components/ThemeProvider";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -16,14 +17,16 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${outfit.variable} antialiased min-h-screen bg-dark-900 text-white font-sans`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${outfit.variable} antialiased min-h-screen bg-background text-foreground font-sans`}>
         <Providers>
-          <Navbar />
-          <main>
-            {children}
-          </main>
-          <Footer />
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <Navbar />
+            <main className="bg-background text-foreground min-h-screen">
+              {children}
+            </main>
+            <Footer />
+          </ThemeProvider>
         </Providers>
       </body>
     </html>

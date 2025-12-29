@@ -91,17 +91,17 @@ export default function AdminBrands() {
         setError(null);
     };
 
-    if (loading) return <div className="text-white text-center pt-20">Loading...</div>;
+    if (loading) return <div className="text-foreground text-center pt-20">Loading...</div>;
 
     return (
         <div className="pt-10 pb-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <Link href="/admin" className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition-colors">
+                <Link href="/admin" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors">
                     <ArrowLeft className="w-5 h-5 mr-2" />
                     Back to Dashboard
                 </Link>
 
-                <h1 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                <h1 className="text-3xl font-bold text-foreground mb-8 flex items-center gap-3">
                     <Tag className="w-8 h-8 text-primary" />
                     Manage Brands
                 </h1>
@@ -109,8 +109,8 @@ export default function AdminBrands() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* Form Section */}
                     <div className="md:col-span-1">
-                        <div className="bg-dark-800 rounded-2xl border border-white/5 p-6 sticky top-24">
-                            <h2 className="text-xl font-bold text-white mb-4">
+                        <div className="bg-card rounded-2xl border border-border p-6 sticky top-24">
+                            <h2 className="text-xl font-bold text-foreground mb-4">
                                 {isEditing ? 'Edit Brand' : 'Add New Brand'}
                             </h2>
 
@@ -118,22 +118,22 @@ export default function AdminBrands() {
 
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <label className="block text-gray-400 text-sm mb-1">Name</label>
+                                    <label className="block text-muted-foreground text-sm mb-1">Name</label>
                                     <input
                                         type="text"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full bg-dark-900 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
+                                        className="w-full bg-background border border-border rounded-lg px-3 py-2 text-foreground focus:outline-none focus:border-primary"
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-gray-400 text-sm mb-1">Logo URL (Optional)</label>
+                                    <label className="block text-muted-foreground text-sm mb-1">Logo URL (Optional)</label>
                                     <input
                                         type="url"
                                         value={formData.logoUrl}
                                         onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
-                                        className="w-full bg-dark-900 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
+                                        className="w-full bg-background border border-border rounded-lg px-3 py-2 text-foreground focus:outline-none focus:border-primary"
                                         placeholder="https://..."
                                     />
                                 </div>
@@ -149,7 +149,7 @@ export default function AdminBrands() {
                                         <button
                                             type="button"
                                             onClick={handleCancel}
-                                            className="px-4 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
+                                            className="px-4 bg-muted hover:bg-muted/80 text-foreground rounded-lg transition-colors"
                                         >
                                             Cancel
                                         </button>
@@ -161,34 +161,36 @@ export default function AdminBrands() {
 
                     {/* List Section */}
                     <div className="md:col-span-2">
-                        <div className="bg-dark-800 rounded-2xl border border-white/5 overflow-hidden">
-                            <table className="w-full text-left text-gray-400">
-                                <thead className="bg-dark-900/50 text-white uppercase text-xs font-bold">
+                        <div className="bg-card rounded-2xl border border-border overflow-hidden">
+                            <table className="w-full text-left text-muted-foreground">
+                                <thead className="bg-muted/50 text-foreground uppercase text-xs font-bold">
                                     <tr>
                                         <th className="p-4">Brand</th>
                                         <th className="p-4">Logo</th>
                                         <th className="p-4 text-center">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-white/5">
+                                <tbody className="divide-y divide-border">
                                     {brands.map((brand) => (
-                                        <tr key={brand._id} className="hover:bg-white/5 transition-colors">
-                                            <td className="p-4 font-medium text-white">{brand.name}</td>
+                                        <tr key={brand._id} className="hover:bg-muted/50 transition-colors">
+                                            <td className="p-4 font-medium text-foreground">{brand.name}</td>
                                             <td className="p-4">
                                                 {brand.logoUrl ? (
-                                                    <img src={brand.logoUrl} alt={brand.name} className="w-8 h-8 object-contain bg-white rounded p-1" />
+                                                    <img src={brand.logoUrl} alt={brand.name} className="w-8 h-8 object-contain bg-background rounded p-1 border border-border" />
                                                 ) : '-'}
                                             </td>
                                             <td className="p-4 flex justify-center gap-2">
                                                 <button
                                                     onClick={() => handleEdit(brand)}
                                                     className="p-1.5 hover:bg-blue-500/10 text-blue-400 rounded-lg transition-colors"
+                                                    aria-label={`Edit ${brand.name}`}
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(brand._id)}
                                                     className="p-1.5 hover:bg-red-500/10 text-red-500 rounded-lg transition-colors"
+                                                    aria-label={`Delete ${brand.name}`}
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
@@ -197,7 +199,7 @@ export default function AdminBrands() {
                                     ))}
                                     {brands.length === 0 && (
                                         <tr>
-                                            <td colSpan="3" className="p-8 text-center text-gray-500">
+                                            <td colSpan="3" className="p-8 text-center text-muted-foreground">
                                                 No brands yet. Add one!
                                             </td>
                                         </tr>

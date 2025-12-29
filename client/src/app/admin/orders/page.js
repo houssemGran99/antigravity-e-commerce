@@ -98,34 +98,34 @@ const AdminOrders = () => {
     return (
         <div className="pb-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
-                <Link href="/admin" className="inline-flex items-center text-gray-400 hover:text-white mb-8 transition-colors">
+                <Link href="/admin" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors">
                     <ArrowLeft className="w-5 h-5 mr-2" />
                     Back to Dashboard
                 </Link>
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <h1 className="text-3xl font-bold flex items-center gap-3 text-white">
+                    <h1 className="text-3xl font-bold flex items-center gap-3 text-foreground">
                         <ShoppingBag className="w-8 h-8 text-primary" />
                         Manage Orders
                     </h1>
                 </div>
 
-                <div className="bg-dark-800 rounded-2xl border border-white/10 overflow-hidden">
+                <div className="bg-card rounded-2xl border border-border overflow-hidden">
                     {/* Toolbar */}
-                    <div className="p-4 border-b border-white/10 flex flex-col md:flex-row gap-4 justify-between items-center">
+                    <div className="p-4 border-b border-border flex flex-col md:flex-row gap-4 justify-between items-center">
                         <div className="relative w-full md:w-96">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                             <input
                                 type="text"
                                 placeholder="Search by Order ID or User..."
-                                className="w-full bg-dark-900 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-white focus:outline-none focus:border-primary"
+                                className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-2 text-foreground focus:outline-none focus:border-primary"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
                         <div className="flex items-center gap-4">
-                            <div className="text-gray-400 text-sm">
-                                Total Orders: <span className="text-white font-bold">{total}</span>
+                            <div className="text-muted-foreground text-sm">
+                                Total Orders: <span className="text-foreground font-bold">{total}</span>
                             </div>
                             <button
                                 onClick={handleExport}
@@ -138,11 +138,11 @@ const AdminOrders = () => {
                     </div>
 
                     {/* Filters */}
-                    <div className="p-4 border-b border-white/10 flex flex-wrap gap-4 bg-dark-900/30">
+                    <div className="p-4 border-b border-border flex flex-wrap gap-4 bg-muted/30">
                         <select
                             value={filterPaid}
                             onChange={(e) => setFilterPaid(e.target.value)}
-                            className="bg-dark-800 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary cursor-pointer hover:bg-dark-700 transition-colors"
+                            className="bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary cursor-pointer hover:bg-muted/50 transition-colors"
                         >
                             <option value="all">Payment: All</option>
                             <option value="paid">Paid</option>
@@ -151,7 +151,7 @@ const AdminOrders = () => {
                         <select
                             value={filterDelivered}
                             onChange={(e) => setFilterDelivered(e.target.value)}
-                            className="bg-dark-800 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary cursor-pointer hover:bg-dark-700 transition-colors"
+                            className="bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary cursor-pointer hover:bg-muted/50 transition-colors"
                         >
                             <option value="all">Delivery: All</option>
                             <option value="delivered">Delivered</option>
@@ -160,7 +160,7 @@ const AdminOrders = () => {
                         <select
                             value={filterStatus}
                             onChange={(e) => setFilterStatus(e.target.value)}
-                            className="bg-dark-800 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary cursor-pointer hover:bg-dark-700 transition-colors"
+                            className="bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary cursor-pointer hover:bg-muted/50 transition-colors"
                         >
                             <option value="all">Status: All</option>
                             <option value="active">Active</option>
@@ -170,9 +170,9 @@ const AdminOrders = () => {
 
                     {/* Table */}
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse bg-dark-800">
+                        <table className="w-full text-left border-collapse bg-card">
                             <thead>
-                                <tr className="bg-white/5 text-gray-400 text-sm uppercase">
+                                <tr className="bg-muted/50 text-muted-foreground text-sm uppercase">
                                     <th className="p-4 font-semibold">ID</th>
                                     <th className="p-4 font-semibold">User</th>
                                     <th className="p-4 font-semibold">Phone</th>
@@ -184,23 +184,23 @@ const AdminOrders = () => {
                                     <th className="p-4 font-semibold">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/10">
+                            <tbody className="divide-y divide-border">
                                 {loading ? (
                                     <tr>
-                                        <td colSpan="8" className="p-8 text-center text-gray-500">Loading orders...</td>
+                                        <td colSpan="8" className="p-8 text-center text-muted-foreground">Loading orders...</td>
                                     </tr>
                                 ) : orders.length === 0 ? (
                                     <tr>
-                                        <td colSpan="8" className="p-8 text-center text-gray-500">No orders found matching your search.</td>
+                                        <td colSpan="8" className="p-8 text-center text-muted-foreground">No orders found matching your search.</td>
                                     </tr>
                                 ) : (
                                     orders.map(order => (
-                                        <tr key={order._id} className="hover:bg-white/5 transition-colors">
+                                        <tr key={order._id} className="hover:bg-muted/50 transition-colors">
                                             <td className="p-4 font-mono text-sm text-primary">{order._id.substring(0, 10)}...</td>
-                                            <td className="p-4 text-white font-medium">{order.user?.name || 'Unknown User'}</td>
-                                            <td className="p-4 text-gray-400">{order.shippingAddress?.phone || 'N/A'}</td>
-                                            <td className="p-4 text-gray-400">{new Date(order.createdAt).toLocaleDateString()}</td>
-                                            <td className="p-4 text-white font-bold">{order.totalPrice.toFixed(2)} TND</td>
+                                            <td className="p-4 text-foreground font-medium">{order.user?.name || 'Unknown User'}</td>
+                                            <td className="p-4 text-muted-foreground">{order.shippingAddress?.phone || 'N/A'}</td>
+                                            <td className="p-4 text-muted-foreground">{new Date(order.createdAt).toLocaleDateString()}</td>
+                                            <td className="p-4 text-foreground font-bold">{order.totalPrice.toFixed(2)} TND</td>
                                             <td className="p-4">
                                                 {order.isPaid ? (
                                                     <span className="text-green-500 flex items-center gap-1 font-medium text-sm">
@@ -237,8 +237,9 @@ const AdminOrders = () => {
                                             <td className="p-4">
                                                 <button
                                                     onClick={() => setSelectedOrder(order)}
-                                                    className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                                                    className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/10 rounded-lg transition-colors cursor-pointer"
                                                     title="View Details"
+                                                    aria-label={`View details for order ${order._id}`}
                                                 >
                                                     <ExternalLink className="w-5 h-5" />
                                                 </button>
@@ -252,21 +253,21 @@ const AdminOrders = () => {
 
                     {/* Pagination */}
                     {pages > 1 && (
-                        <div className="p-4 border-t border-white/10 flex justify-center items-center gap-2">
+                        <div className="p-4 border-t border-border flex justify-center items-center gap-2">
                             <button
                                 onClick={() => setPage(page - 1)}
                                 disabled={page === 1}
-                                className="px-3 py-1 bg-dark-900 border border-white/10 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/5"
+                                className="px-3 py-1 bg-background border border-border rounded-lg text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted/50"
                             >
                                 Previous
                             </button>
-                            <span className="text-gray-400 text-sm">
-                                Page <span className="text-white font-bold">{page}</span> of {pages}
+                            <span className="text-muted-foreground text-sm">
+                                Page <span className="text-foreground font-bold">{page}</span> of {pages}
                             </span>
                             <button
                                 onClick={() => setPage(page + 1)}
                                 disabled={page === pages}
-                                className="px-3 py-1 bg-dark-900 border border-white/10 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/5"
+                                className="px-3 py-1 bg-background border border-border rounded-lg text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted/50"
                             >
                                 Next
                             </button>

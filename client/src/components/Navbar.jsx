@@ -1,27 +1,78 @@
 'use client';
 
-import React, { useContext, useState, Suspense } from 'react';
+import React, { useContext, useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { ShoppingBag, Camera, Menu, Search, Bell, Check, X, Heart } from 'lucide-react';
+import { ShoppingBag, Camera, Menu, Search, Bell, Check, Heart, Sun, Moon, Laptop } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import { CartState } from '../context/CartContext';
 import { GoogleLogin } from '@react-oauth/google';
-import { useAuth } from '../context/AuthContext';
-import { useNotifications } from '../context/NotificationContext';
+import { useTheme } from 'next-themes';
 
 const Navbar = () => {
-    const { cart } = useContext(CartState);
     const { user, login, logout } = useAuth();
-    const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
-    const [showNotifications, setShowNotifications] = useState(false);
+    const { cart } = useContext(CartState);
     const pathname = usePathname();
+    const [showNotifications, setShowNotifications] = useState(false);
+    const notifications = user?.notifications || [];
+    const unreadCount = notifications.filter(n => !n.isRead).length;
+    const { theme, setTheme, systemTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const currentTheme = theme === 'system' ? systemTheme : theme;
+    const googleTheme = currentTheme === 'dark' ? 'filled_black' : 'outline';
+
+    const markAsRead = async (id) => {
+        try {
+            const token = localStorage.getItem('token');
+            await fetch(`/api/users/notifications/${id}/read`, {
+                method: 'PUT',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            // Ideally update local state or re-fetch user
+            window.location.reload();
+        } catch (error) {
+            console.error('Error marking notification as read:', error);
+        }
+    };
+
+    const markAllAsRead = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            await fetch('/api/users/notifications/read-all', {
+                method: 'PUT',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            window.location.reload();
+        } catch (error) {
+            console.error('Error marking all as read:', error);
+        }
+    };
+
+    // Toggle Theme
+    const toggleTheme = () => {
+        if (theme === 'dark') setTheme('light');
+        else if (theme === 'light') setTheme('system');
+        else setTheme('dark');
+    };
+
+    const ThemeIcon = () => {
+        if (!mounted) return <Sun className="w-5 h-5" />;
+        if (theme === 'dark') return <Moon className="w-5 h-5" />;
+        if (theme === 'light') return <Sun className="w-5 h-5" />;
+        return <Laptop className="w-5 h-5" />;
+    };
 
     return (
-        <nav className="sticky top-0 z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/10">
+        <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center">
-                        <Link href={user?.isAdmin ? "/admin" : "/"} className="flex items-center gap-2 font-bold text-2xl tracking-tighter text-white">
+                        <Link href={user?.isAdmin ? "/admin" : "/"} className="flex items-center gap-2 font-bold text-2xl tracking-tighter text-foreground">
                             <Camera className="w-8 h-8 text-primary" />
                             <span>LUMIÈRE</span>
                         </Link>
@@ -31,8 +82,8 @@ const Navbar = () => {
                         <div className="ml-10 flex items-center space-x-8">
                             {!user?.isAdmin && (
                                 <>
-                                    <Link href="/" className="text-gray-300 hover:text-primary transition-colors px-3 py-2 rounded-md font-medium">Home</Link>
-                                    <Link href="/shop" className="text-gray-300 hover:text-primary transition-colors px-3 py-2 rounded-md font-medium">Shop</Link>
+                                    <Link href="/" className="text-muted-foreground hover:text-primary transition-colors px-3 py-2 rounded-md font-medium">Home</Link>
+                                    <Link href="/shop" className="text-muted-foreground hover:text-primary transition-colors px-3 py-2 rounded-md font-medium">Shop</Link>
                                 </>
                             )}
 
@@ -51,24 +102,26 @@ const Navbar = () => {
                             <div className="relative">
                                 <button
                                     onClick={() => setShowNotifications(!showNotifications)}
-                                    className="p-2 text-gray-300 hover:text-white hover:bg-white/5 rounded-full transition-colors relative"
+                                    className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-colors relative"
+                                    aria-label="Notifications"
                                 >
                                     <Bell className="w-5 h-5" />
                                     {unreadCount > 0 && (
-                                        <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-dark-900">
+                                        <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-background">
                                             {unreadCount}
                                         </span>
                                     )}
                                 </button>
 
                                 {showNotifications && (
-                                    <div className="absolute right-0 mt-2 w-80 bg-dark-900 border border-white/10 rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
-                                        <div className="p-3 border-b border-white/5 flex justify-between items-center bg-dark-800/50">
-                                            <h3 className="text-sm font-semibold text-white">Notifications</h3>
+                                    <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+                                        <div className="p-3 border-b border-border flex justify-between items-center bg-muted/50">
+                                            <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
                                             {unreadCount > 0 && (
                                                 <button
                                                     onClick={markAllAsRead}
                                                     className="text-xs text-primary hover:text-blue-400 transition-colors"
+                                                    aria-label="Mark all notifications as read"
                                                 >
                                                     Mark all read
                                                 </button>
@@ -76,14 +129,14 @@ const Navbar = () => {
                                         </div>
                                         <div className="max-h-80 overflow-y-auto">
                                             {notifications.length === 0 ? (
-                                                <div className="p-8 text-center text-gray-500 text-sm">
+                                                <div className="p-8 text-center text-muted-foreground text-sm">
                                                     No notifications
                                                 </div>
                                             ) : (
                                                 notifications.map(notification => (
                                                     <div
                                                         key={notification._id}
-                                                        className={`p-4 border-b border-white/5 hover:bg-white/5 transition-colors relative group ${!notification.isRead ? 'bg-primary/5' : ''}`}
+                                                        className={`p-4 border-b border-border hover:bg-muted transition-colors relative group ${!notification.isRead ? 'bg-primary/5' : ''}`}
                                                     >
                                                         <div className="flex gap-3">
                                                             <div className="flex-1">
@@ -93,19 +146,20 @@ const Navbar = () => {
                                                                         setShowNotifications(false);
                                                                         markAsRead(notification._id);
                                                                     }}
-                                                                    className={`text-sm block mb-1 ${!notification.isRead ? 'text-white font-medium' : 'text-gray-400'}`}
+                                                                    className={`text-sm block mb-1 ${!notification.isRead ? 'text-foreground font-medium' : 'text-muted-foreground'}`}
                                                                 >
                                                                     {notification.message}
                                                                 </Link>
-                                                                <span className="text-xs text-gray-600 block">
+                                                                <span className="text-xs text-muted-foreground block">
                                                                     {new Date(notification.createdAt).toLocaleDateString()} {new Date(notification.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                                 </span>
                                                             </div>
                                                             {!notification.isRead && (
                                                                 <button
                                                                     onClick={() => markAsRead(notification._id)}
-                                                                    className="text-gray-500 hover:text-primary opacity-0 group-hover:opacity-100 transition-all self-start"
+                                                                    className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-all self-start"
                                                                     title="Mark as read"
+                                                                    aria-label="Mark as read"
                                                                 >
                                                                     <Check className="w-4 h-4" />
                                                                 </button>
@@ -120,19 +174,27 @@ const Navbar = () => {
                             </div>
                         )}
 
+                        <button
+                            onClick={toggleTheme}
+                            className="p-2 text-gray-400 hover:text-foreground hover:bg-muted rounded-full transition-colors"
+                            aria-label="Toggle Theme"
+                        >
+                            <ThemeIcon />
+                        </button>
+
                         {user ? (
                             <div className="flex items-center gap-3">
-                                <Link href="/profile" className="flex items-center gap-3 hover:bg-white/5 p-1.5 rounded-full pr-4 transition-colors group">
+                                <Link href="/profile" className="flex items-center gap-3 hover:bg-muted p-1.5 rounded-full pr-4 transition-colors group" aria-label="My Profile">
                                     {/* Using standard img to avoid next/image config issues for external google urls initially */}
                                     <img
                                         src={user.picture}
                                         alt={user.name}
                                         referrerPolicy="no-referrer"
-                                        className="w-8 h-8 rounded-full border border-white/20 group-hover:border-primary transition-colors"
+                                        className="w-8 h-8 rounded-full border border-border group-hover:border-primary transition-colors"
                                     />
-                                    <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">{user.name}</span>
+                                    <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">{user.name}</span>
                                 </Link>
-                                <button onClick={logout} className="text-sm text-gray-400 hover:text-white transition-colors ml-2">Logout</button>
+                                <button onClick={logout} className="text-sm text-muted-foreground hover:text-foreground transition-colors ml-2">Logout</button>
                             </div>
                         ) : (
                             pathname !== '/admin/login' && (
@@ -144,7 +206,7 @@ const Navbar = () => {
                                         onError={() => {
                                             console.log('Login Failed');
                                         }}
-                                        theme="filled_black"
+                                        theme={googleTheme}
                                         size="medium"
                                         shape="pill"
                                     />
@@ -154,10 +216,10 @@ const Navbar = () => {
 
                         {!user?.isAdmin && pathname !== '/admin/login' && (
                             <>
-                                <Link href="/wishlist" className="p-2 hover:bg-white/5 rounded-full transition-colors text-white">
+                                <Link href="/wishlist" className="p-2 hover:bg-muted rounded-full transition-colors text-foreground" aria-label="My Wishlist">
                                     <Heart className="w-6 h-6" />
                                 </Link>
-                                <Link href="/cart" className="relative p-2 hover:bg-white/5 rounded-full transition-colors text-white">
+                                <Link href="/cart" className="relative p-2 hover:bg-muted rounded-full transition-colors text-foreground" aria-label="Shopping Cart">
                                     <ShoppingBag className="w-6 h-6" />
                                     {cart.length > 0 && (
                                         <span className="absolute top-0 right-0 bg-primary text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full text-white">
@@ -167,7 +229,7 @@ const Navbar = () => {
                                 </Link>
                             </>
                         )}
-                        <button className="md:hidden p-2 text-white">
+                        <button className="md:hidden p-2 text-foreground" aria-label="Open Menu">
                             <Menu className="w-6 h-6" />
                         </button>
                     </div>
@@ -207,9 +269,9 @@ const SearchForm = () => {
                 placeholder="Search cameras..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-dark-800 border border-white/10 rounded-full py-1.5 px-4 pl-10 text-sm focus:outline-none focus:border-primary w-48 transition-all focus:w-64 text-white placeholder-gray-500"
+                className="bg-card border border-border rounded-full py-1.5 px-4 pl-10 text-sm focus:outline-none focus:border-primary w-48 transition-all focus:w-64 text-foreground placeholder-muted-foreground"
             />
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
         </form>
     );
 };

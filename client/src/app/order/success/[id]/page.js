@@ -21,25 +21,25 @@ const OrderSuccessContent = ({ id }) => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-4 text-white">
-            <div className="bg-dark-800 p-12 rounded-3xl border border-white/10 max-w-lg w-full text-center">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4 text-foreground">
+            <div className="bg-card p-12 rounded-3xl border border-border max-w-lg w-full text-center">
                 <div className="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                     <CheckCircle className="w-12 h-12 text-green-500" />
                 </div>
-                <h1 className="text-4xl font-bold text-white mb-4">Order Confirmed!</h1>
-                <p className="text-gray-400 text-lg mb-8">
-                    Your order <span className="text-white font-mono font-bold">#{id}</span> has been placed successfully.
+                <h1 className="text-4xl font-bold text-foreground mb-4">Order Confirmed!</h1>
+                <p className="text-muted-foreground text-lg mb-8">
+                    Your order <span className="text-foreground font-mono font-bold">#{id}</span> has been placed successfully.
                 </p>
 
-                <div className="bg-dark-900 rounded-xl p-6 mb-8 text-left border border-white/5">
+                <div className="bg-muted rounded-xl p-6 mb-8 text-left border border-border">
                     <div className="flex items-start gap-4">
                         <div className="p-3 bg-blue-500/10 rounded-lg">
                             <Truck className="w-6 h-6 text-blue-400" />
                         </div>
                         <div>
-                            <h3 className="text-white font-bold mb-1">Estimated Delivery</h3>
-                            <p className="text-gray-400 text-sm">3-5 Business Days</p>
-                            <p className="text-gray-500 text-xs mt-2">We've sent a confirmation email with details.</p>
+                            <h3 className="text-foreground font-bold mb-1">Estimated Delivery</h3>
+                            <p className="text-muted-foreground text-sm">3-5 Business Days</p>
+                            <p className="text-muted-foreground text-xs mt-2">We've sent a confirmation email with details.</p>
                         </div>
                     </div>
                 </div>
@@ -48,7 +48,7 @@ const OrderSuccessContent = ({ id }) => {
                     <Link href="/shop" className="bg-primary hover:bg-blue-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 block w-full">
                         Continue Shopping
                     </Link>
-                    <Link href="/profile" className="text-gray-400 hover:text-white py-2 flex items-center justify-center gap-2 transition-colors">
+                    <Link href="/profile" className="text-muted-foreground hover:text-foreground py-2 flex items-center justify-center gap-2 transition-colors">
                         View My Orders <ArrowRight className="w-4 h-4" />
                     </Link>
                 </div>

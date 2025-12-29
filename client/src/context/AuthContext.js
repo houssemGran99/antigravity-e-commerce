@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
 
         if (token && savedUser) {
             try {
-                // Check expiry
+                // Check expiry immediately
                 const decoded = jwtDecode(token);
                 if (decoded.exp * 1000 < Date.now()) {
                     logout();
@@ -50,6 +50,23 @@ export const AuthProvider = ({ children }) => {
             }
         }
         setLoading(false);
+
+        // Periodically check for token expiration
+        const intervalId = setInterval(() => {
+            const currentToken = localStorage.getItem('token');
+            if (currentToken) {
+                try {
+                    const decoded = jwtDecode(currentToken);
+                    if (decoded.exp * 1000 < Date.now()) {
+                        logout();
+                    }
+                } catch (error) {
+                    logout();
+                }
+            }
+        }, 60000); // Check every minute
+
+        return () => clearInterval(intervalId);
     }, []);
 
     const addToWishlist = async (productId) => {
