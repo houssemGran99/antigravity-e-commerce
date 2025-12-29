@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, admin } = require('../middleware/authMiddleware');
 
 /**
  * @swagger
@@ -205,6 +205,74 @@ router.post('/:id/reviews', protect, async (req, res) => {
 
             await product.save();
             res.status(201).json({ message: 'Review added' });
+        } else {
+            res.status(404).json({ message: 'Product not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// @desc    Reply to a review
+// @route   PUT /api/products/:id/reviews/:reviewId/reply
+// @access  Private/Admin
+router.put('/:id/reviews/:reviewId/reply', protect, admin, async (req, res) => {
+    try {
+        const { reply } = req.body;
+        const product = await Product.findById(req.params.id);
+
+        if (product) {
+            const review = product.reviews.id(req.params.reviewId);
+
+            if (review) {
+                review.adminReply = reply;
+                await product.save();
+                res.json({ message: 'Reply added' });
+            } else {
+                res.status(404).json({ message: 'Review not found' });
+            }
+        } else {
+            res.status(404).json({ message: 'Product not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// @desc    Delete a review
+// @route   DELETE /api/products/:id/reviews/:reviewId
+// @access  Private/Admin
+router.delete('/:id/reviews/:reviewId', protect, admin, async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+
+        if (product) {
+            const review = product.reviews.id(req.params.reviewId);
+
+            if (review) {
+                // Filter out the review to delete
+                const newReviews = product.reviews.filter(
+                    (r) => r._id.toString() !== req.params.reviewId
+                );
+                product.reviews = newReviews;
+
+                product.numReviews = product.reviews.length;
+
+                if (product.reviews.length > 0) {
+                    product.rating =
+                        product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+                        product.reviews.length;
+                } else {
+                    product.rating = 0;
+                }
+
+                await product.save();
+                res.json({ message: 'Review deleted', rating: product.rating, numReviews: product.numReviews });
+            } else {
+                res.status(404).json({ message: 'Review not found' });
+            }
         } else {
             res.status(404).json({ message: 'Product not found' });
         }

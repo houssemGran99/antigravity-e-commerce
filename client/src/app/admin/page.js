@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, Edit, Trash2, Eye, Tag, Users, ShoppingBag, Layers } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Tag, Users, ShoppingBag, Layers, FileSpreadsheet, AlertTriangle, X } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
+import { utils, writeFile } from 'xlsx';
 
 const AdminDashboard = () => {
     const [products, setProducts] = useState([]);
@@ -11,6 +12,7 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterCategory, setFilterCategory] = useState('');
+    const [itemToDelete, setItemToDelete] = useState(null);
 
     const categories = [...new Set((products || []).map(p => p.category?.name || 'Uncategorized'))].sort();
 
@@ -110,16 +112,38 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this product?')) {
-            try {
-                await fetch(`/api/products/${id}`, {
-                    method: 'DELETE',
-                });
-                setProducts(products.filter(product => product._id !== id));
-            } catch (error) {
-                console.error('Error deleting product:', error);
-            }
+    const handleExport = () => {
+        const exportData = products.map(product => ({
+            ID: product._id,
+            Name: product.name,
+            Brand: product.brand?.name || product.brand,
+            Category: product.category?.name || product.category,
+            Price: product.price,
+            Stock: product.inStock,
+            Description: product.description
+        }));
+
+        const ws = utils.json_to_sheet(exportData);
+        const wb = utils.book_new();
+        utils.book_append_sheet(wb, ws, "Products");
+        writeFile(wb, "products_list.xlsx");
+    };
+
+    const handleDelete = (id) => {
+        setItemToDelete(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!itemToDelete) return;
+
+        try {
+            await fetch(`/api/products/${itemToDelete}`, {
+                method: 'DELETE',
+            });
+            setProducts(products.filter(product => product._id !== itemToDelete));
+            setItemToDelete(null);
+        } catch (error) {
+            console.error('Error deleting product:', error);
         }
     };
 
@@ -136,7 +160,8 @@ const AdminDashboard = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-4xl font-bold text-foreground">Admin Dashboard</h1>
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 flex-wrap">
+
                         <Link href="/admin/brands" className="bg-card hover:bg-muted border border-border text-foreground font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all">
                             <Tag className="w-5 h-5" />
                             Manage Brands
@@ -383,6 +408,10 @@ const AdminDashboard = () => {
                             <option key={cat} value={cat}>{cat}</option>
                         ))}
                     </select>
+                    <button onClick={handleExport} className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-green-600/20 whitespace-nowrap">
+                        <FileSpreadsheet className="w-5 h-5" />
+                        Export
+                    </button>
                 </div>
 
                 <div className="bg-card rounded-2xl border border-border overflow-hidden">
@@ -426,6 +455,36 @@ const AdminDashboard = () => {
                         </table>
                     </div>
                 </div>
+                {/* Delete Confirmation Modal */}
+                {itemToDelete && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+                        <div className="bg-card border border-border rounded-2xl w-full max-w-md shadow-2xl p-6 animate-zoom-in-95">
+                            <div className="flex flex-col items-center text-center p-4">
+                                <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
+                                    <AlertTriangle className="w-8 h-8 text-red-500" />
+                                </div>
+                                <h3 className="text-xl font-bold text-foreground mb-2">Delete Product?</h3>
+                                <p className="text-muted-foreground mb-6">
+                                    Are you sure you want to delete this product? This action cannot be undone.
+                                </p>
+                                <div className="flex gap-4 w-full">
+                                    <button
+                                        onClick={() => setItemToDelete(null)}
+                                        className="flex-1 px-4 py-2 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-medium transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={confirmDelete}
+                                        className="flex-1 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition-colors shadow-lg shadow-red-600/20"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
