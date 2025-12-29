@@ -129,10 +129,10 @@ const AdminOrders = () => {
                             </div>
                             <button
                                 onClick={handleExport}
-                                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm"
+                                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-green-600/20 whitespace-nowrap"
                             >
                                 <Download className="w-4 h-4" />
-                                Export CSV
+                                Export
                             </button>
                         </div>
                     </div>
