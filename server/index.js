@@ -50,13 +50,38 @@ app.get('/api-docs.json', (req, res) => {
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// Middleware
+// Rate Limiting
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const hpp = require('hpp');
+
+const limiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // 10 minutes
+    max: 100, // Limit each IP to 100 requests per 10 mins
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false // Disable the `X-RateLimit-*` headers
+});
+
+// Middleware (Logging)
 app.use((req, res, next) => {
     console.log(`[API Request] ${req.method} ${req.url}`);
     next();
 });
-app.use(express.json());
+
+// Security Headers
+app.use(helmet());
+
+// CORS & Parsing
 app.use(cors());
+app.use(express.json());
+
+// Sanitization (Must be after express.json)
+// app.use(mongoSanitize());
+// app.use(hpp());
+
+// Rate Limiting
+app.use('/api', limiter);
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/camera_shop')

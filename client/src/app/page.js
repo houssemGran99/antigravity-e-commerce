@@ -20,6 +20,7 @@ async function getProducts() {
 
 export default async function Home() {
   const productsData = await getProducts();
+
   // Handle both array (legacy/old) and object (paginated) responses
   let products = [];
   if (Array.isArray(productsData)) {
@@ -34,12 +35,12 @@ export default async function Home() {
     <div>
       <Hero />
 
-      <section className="py-20 bg-dark-900">
+      <section className="py-20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-12">
             <div>
-              <h2 className="text-3xl font-bold text-white mb-2">Featured Products</h2>
-              <p className="text-gray-400">Top picks for this week</p>
+              <h2 className="text-3xl font-bold text-foreground mb-2">Featured Products</h2>
+              <p className="text-muted-foreground">Top picks for this week</p>
             </div>
           </div>
 

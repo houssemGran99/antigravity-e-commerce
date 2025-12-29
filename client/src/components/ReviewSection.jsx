@@ -49,11 +49,11 @@ const ReviewSection = ({ productId, reviews = [], rating, numReviews }) => {
     };
 
     return (
-        <div className="mt-20 border-t border-white/10 pt-12">
-            <h2 className="text-3xl font-bold text-white mb-8">Reviews</h2>
+        <div className="mt-20 border-t border-border pt-12">
+            <h2 className="text-3xl font-bold text-foreground mb-8">Reviews</h2>
 
             {localReviews.length === 0 && (
-                <div className="bg-white/5 rounded-xl p-6 text-center text-gray-400 mb-8 border border-white/5">
+                <div className="bg-muted rounded-xl p-6 text-center text-muted-foreground mb-8 border border-border">
                     No reviews yet. Be the first to review this product!
                 </div>
             )}
@@ -62,43 +62,43 @@ const ReviewSection = ({ productId, reviews = [], rating, numReviews }) => {
                 {/* List of Reviews */}
                 <div className="space-y-6">
                     {localReviews.map((review) => (
-                        <div key={review._id} className="bg-dark-800 p-6 rounded-xl border border-white/5">
+                        <div key={review._id} className="bg-card p-6 rounded-xl border border-border">
                             <div className="flex justify-between items-start mb-2">
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                                         <User className="w-5 h-5" />
                                     </div>
-                                    <span className="font-bold text-white">{review.name}</span>
+                                    <span className="font-bold text-foreground">{review.name}</span>
                                 </div>
                                 <div className="flex text-yellow-500">
                                     {[...Array(5)].map((_, i) => (
                                         <Star
                                             key={i}
-                                            className={`w-4 h-4 ${i < review.rating ? 'fill-current' : 'text-gray-600'}`}
+                                            className={`w-4 h-4 ${i < review.rating ? 'fill-current' : 'text-muted-foreground'}`}
                                         />
                                     ))}
                                 </div>
                             </div>
-                            <div className="text-xs text-gray-500 mb-3 ml-13">
+                            <div className="text-xs text-muted-foreground mb-3 ml-13">
                                 {new Date(review.createdAt).toLocaleDateString()}
                             </div>
-                            <p className="text-gray-300 leading-relaxed">{review.comment}</p>
+                            <p className="text-muted-foreground leading-relaxed">{review.comment}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* Review Form */}
                 <div>
-                    <div className="bg-dark-800 p-8 rounded-2xl border border-white/5 sticky top-24">
-                        <h3 className="text-xl font-bold text-white mb-6">Write a Customer Review</h3>
+                    <div className="bg-card p-8 rounded-2xl border border-border sticky top-24">
+                        <h3 className="text-xl font-bold text-foreground mb-6">Write a Customer Review</h3>
                         {user ? (
                             <form onSubmit={submitHandler} className="space-y-4">
                                 <div>
-                                    <label className="block text-gray-400 text-sm mb-2">Rating</label>
+                                    <label className="block text-muted-foreground text-sm mb-2">Rating</label>
                                     <select
                                         value={userRating}
                                         onChange={(e) => setUserRating(Number(e.target.value))}
-                                        className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
+                                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors"
                                     >
                                         <option value="1">1 - Poor</option>
                                         <option value="2">2 - Fair</option>
@@ -108,12 +108,12 @@ const ReviewSection = ({ productId, reviews = [], rating, numReviews }) => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-gray-400 text-sm mb-2">Comment (Optional)</label>
+                                    <label className="block text-muted-foreground text-sm mb-2">Comment (Optional)</label>
                                     <textarea
                                         value={comment}
                                         onChange={(e) => setComment(e.target.value)}
                                         rows="4"
-                                        className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors resize-none"
+                                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors resize-none"
                                         placeholder="Share your thoughts about this product..."
                                     ></textarea>
                                 </div>
@@ -127,8 +127,8 @@ const ReviewSection = ({ productId, reviews = [], rating, numReviews }) => {
                             </form>
                         ) : (
                             <div className="text-center py-8">
-                                <p className="text-gray-400 mb-4">Please sign in to write a review</p>
-                                <a href="/login" className="inline-block bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-lg transition-colors">
+                                <p className="text-muted-foreground mb-4">Please sign in to write a review</p>
+                                <a href="/login" className="inline-block bg-muted hover:bg-muted/80 text-foreground px-6 py-2 rounded-lg transition-colors">
                                     Sign In
                                 </a>
                             </div>

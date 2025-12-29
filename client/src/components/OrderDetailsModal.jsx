@@ -70,15 +70,15 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-            <div className="bg-dark-800 border border-white/10 rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto animate-zoom-in-95">
-                <div className="sticky top-0 bg-dark-800/95 backdrop-blur-md p-6 border-b border-white/10 flex justify-between items-center z-10">
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+            <div className="bg-card border border-border rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto animate-zoom-in-95">
+                <div className="sticky top-0 bg-card/95 backdrop-blur-md p-6 border-b border-border flex justify-between items-center z-10">
+                    <h2 className="text-2xl font-bold text-foreground flex items-center gap-3">
                         <Package className="w-6 h-6 text-primary" />
-                        Order Details <span className="text-gray-500 font-mono text-base">#{order._id.substring(0, 8)}...</span>
+                        Order Details <span className="text-muted-foreground font-mono text-base">#{order._id.substring(0, 8)}...</span>
                     </h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-full"
+                        className="text-muted-foreground hover:text-foreground transition-colors p-1 hover:bg-muted/10 rounded-full"
                     >
                         <X className="w-6 h-6" />
                     </button>
@@ -86,20 +86,20 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
 
                 <div className="p-6 space-y-8">
                     {/* Status & Date */}
-                    <div className="flex flex-wrap gap-4 justify-between items-center bg-dark-900/50 p-4 rounded-xl border border-white/5">
-                        <div className="flex items-center gap-2 text-gray-400">
+                    <div className="flex flex-wrap gap-4 justify-between items-center bg-muted/50 p-4 rounded-xl border border-border">
+                        <div className="flex items-center gap-2 text-muted-foreground">
                             <Calendar className="w-5 h-5" />
                             {new Date(order.createdAt).toLocaleString()}
                         </div>
                         <div className="flex gap-2">
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${order.isPaid ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'}`}>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${order.isPaid ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'}`}>
                                 {order.isPaid ? 'Paid' : 'Pending Payment'}
                             </span>
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${order.isDelivered ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold border ${order.isDelivered ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}>
                                 {order.isDelivered ? 'Delivered' : 'Processing'}
                             </span>
                             {order.isCancelled && (
-                                <span className="px-3 py-1 rounded-full text-xs font-bold border bg-red-500/10 text-red-400 border-red-500/20">
+                                <span className="px-3 py-1 rounded-full text-xs font-bold border bg-red-500/10 text-red-500 border-red-500/20">
                                     Cancelled
                                 </span>
                             )}
@@ -108,25 +108,25 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
 
                     {/* Customer Info */}
                     <div>
-                        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
                             <User className="w-5 h-5 text-primary" />
                             Customer Information
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-dark-900/50 p-4 rounded-xl border border-white/5">
-                                <p className="text-sm text-gray-400 mb-1">Name</p>
-                                <p className="text-white font-medium">{order.user?.name || 'Guest'}</p>
+                            <div className="bg-muted/50 p-4 rounded-xl border border-border">
+                                <p className="text-sm text-muted-foreground mb-1">Name</p>
+                                <p className="text-foreground font-medium">{order.user?.name || 'Guest'}</p>
                             </div>
-                            <div className="bg-dark-900/50 p-4 rounded-xl border border-white/5">
-                                <p className="text-sm text-gray-400 mb-1 flex items-center gap-1"><Mail className="w-3 h-3" /> Email</p>
-                                <p className="text-white font-medium break-all">{order.user?.email || 'N/A'}</p>
+                            <div className="bg-muted/50 p-4 rounded-xl border border-border">
+                                <p className="text-sm text-muted-foreground mb-1 flex items-center gap-1"><Mail className="w-3 h-3" /> Email</p>
+                                <p className="text-foreground font-medium break-all">{order.user?.email || 'N/A'}</p>
                             </div>
-                            <div className="bg-dark-900/50 p-4 rounded-xl border border-white/5 md:col-span-2">
-                                <p className="text-sm text-gray-400 mb-1 flex items-center gap-1"><MapPin className="w-3 h-3" /> Shipping Address</p>
-                                <p className="text-white font-medium">
+                            <div className="bg-muted/50 p-4 rounded-xl border border-border md:col-span-2">
+                                <p className="text-sm text-muted-foreground mb-1 flex items-center gap-1"><MapPin className="w-3 h-3" /> Shipping Address</p>
+                                <p className="text-foreground font-medium">
                                     {order.shippingAddress?.address}, {order.shippingAddress?.city}, {order.shippingAddress?.country}
                                 </p>
-                                <p className="text-gray-500 text-sm mt-1 flex items-center gap-1">
+                                <p className="text-muted-foreground text-sm mt-1 flex items-center gap-1">
                                     <Phone className="w-3 h-3" /> {order.shippingAddress?.phone}
                                 </p>
                             </div>
@@ -135,10 +135,10 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
 
                     {/* Order Items */}
                     <div>
-                        <h3 className="text-lg font-bold text-white mb-4">Items Ordered</h3>
-                        <div className="bg-dark-900/50 rounded-xl border border-white/5 overflow-hidden">
+                        <h3 className="text-lg font-bold text-foreground mb-4">Items Ordered</h3>
+                        <div className="bg-muted/50 rounded-xl border border-border overflow-hidden">
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-white/5 text-gray-400">
+                                <thead className="bg-muted/30 text-muted-foreground">
                                     <tr>
                                         <th className="p-3">Product</th>
                                         <th className="p-3 text-center">Qty</th>
@@ -146,7 +146,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                                         <th className="p-3 text-right">Total</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-white/5">
+                                <tbody className="divide-y divide-border">
                                     {(() => {
                                         const aggregateOrderItems = (items) => {
                                             const grouped = items.reduce((acc, item) => {
@@ -165,13 +165,13 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                                             <tr key={idx}>
                                                 <td className="p-3">
                                                     <div className="flex items-center gap-3">
-                                                        <img src={item.image} alt={item.name} className="w-10 h-10 rounded-lg object-cover bg-dark-800" />
-                                                        <span className="text-white font-medium">{item.name}</span>
+                                                        <img src={item.image} alt={item.name} className="w-10 h-10 rounded-lg object-cover bg-background border border-border" />
+                                                        <span className="text-foreground font-medium">{item.name}</span>
                                                     </div>
                                                 </td>
-                                                <td className="p-3 text-center text-gray-300">x{item.qty}</td>
-                                                <td className="p-3 text-right text-gray-300">{item.price} TND</td>
-                                                <td className="p-3 text-right text-white font-bold">{(item.price * item.qty).toFixed(2)} TND</td>
+                                                <td className="p-3 text-center text-muted-foreground">x{item.qty}</td>
+                                                <td className="p-3 text-right text-muted-foreground">{item.price} TND</td>
+                                                <td className="p-3 text-right text-foreground font-bold">{(item.price * item.qty).toFixed(2)} TND</td>
                                             </tr>
                                         ));
                                     })()}
@@ -181,22 +181,22 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                     </div>
 
                     {/* Financial Summary */}
-                    <div className="border-t border-white/10 pt-4">
+                    <div className="border-t border-border pt-4">
                         <div className="flex justify-end">
                             <div className="w-full md:w-1/2 space-y-2">
-                                <div className="flex justify-between text-gray-400">
+                                <div className="flex justify-between text-muted-foreground">
                                     <span>Subtotal</span>
                                     <span>{(order.itemsPrice || 0).toFixed(2)} TND</span>
                                 </div>
-                                <div className="flex justify-between text-gray-400">
+                                <div className="flex justify-between text-muted-foreground">
                                     <span>Shipping</span>
                                     <span>{order.shippingPrice === 0 ? 'Free' : `${(order.shippingPrice || 0).toFixed(2)} TND`}</span>
                                 </div>
-                                <div className="flex justify-between text-gray-400">
+                                <div className="flex justify-between text-muted-foreground">
                                     <span>Tax</span>
                                     <span>{(order.taxPrice || 0).toFixed(2)} TND</span>
                                 </div>
-                                <div className="flex justify-between text-white font-bold text-xl pt-2 border-t border-white/10">
+                                <div className="flex justify-between text-foreground font-bold text-xl pt-2 border-t border-border">
                                     <span>Total</span>
                                     <span>{(order.totalPrice || 0).toFixed(2)} TND</span>
                                 </div>
@@ -207,7 +207,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
 
                 {/* Admin Actions */}
                 {user?.isAdmin && !order.isCancelled && (
-                    <div className="p-6 bg-dark-900/30 border-t border-white/10 flex flex-wrap gap-4 justify-end">
+                    <div className="p-6 bg-muted/30 border-t border-border flex flex-wrap gap-4 justify-end">
                         {!order.isPaid && (
                             <button
                                 onClick={payOrder}

@@ -125,15 +125,15 @@ const ShopClient = () => {
     return (
         <div className="pt-10 pb-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-4xl font-bold mb-8 text-white">Shop</h1>
+                <h1 className="text-4xl font-bold mb-8 text-foreground">Shop</h1>
 
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Filters Sidebar */}
-                    <div className="w-full md:w-64 bg-dark-800 p-6 rounded-2xl border border-white/5 h-fit space-y-8 sticky top-24">
-                        {/* ... existing sidebar content ... */}
+                    <div className="w-full md:w-64 bg-card p-6 rounded-2xl border border-border h-fit space-y-8 sticky top-24">
+                        {/* Search Filter input removed/not present in view, assuming handled in Navbar */}
                         {/* Price Filter - Enhanced UI */}
-                        <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <div className="bg-muted p-4 rounded-xl border border-border">
+                            <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
                                 <span className="text-primary">$</span> Price Range
                             </h3>
                             <div className="space-y-6">
@@ -151,28 +151,28 @@ const ShopClient = () => {
                                         step={100}
                                         trackStyle={{ backgroundColor: '#2563eb' }}
                                         handleStyle={{ borderColor: '#2563eb', backgroundColor: '#2563eb' }}
-                                        railStyle={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                        railStyle={{ backgroundColor: 'currentColor', opacity: 0.1 }}
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
                                     <div>
-                                        <label className="text-xs text-gray-500 mb-1 block">Min (TND)</label>
+                                        <label className="text-xs text-muted-foreground mb-1 block">Min (TND)</label>
                                         <input
                                             type="number"
                                             placeholder="0"
                                             value={minPrice}
                                             onChange={(e) => handlePriceChange(e, 'min')}
-                                            className="w-full bg-dark-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-primary transition-all"
+                                            className="w-full bg-background border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary transition-all"
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 mb-1 block">Max (TND)</label>
+                                        <label className="text-xs text-muted-foreground mb-1 block">Max (TND)</label>
                                         <input
                                             type="number"
                                             placeholder="Max"
                                             value={maxPrice}
                                             onChange={(e) => handlePriceChange(e, 'max')}
-                                            className="w-full bg-dark-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-primary transition-all"
+                                            className="w-full bg-background border border-border rounded-lg px-3 py-2 text-foreground text-sm focus:outline-none focus:border-primary transition-all"
                                         />
                                     </div>
                                 </div>
@@ -186,11 +186,11 @@ const ShopClient = () => {
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-bold text-white mb-4">Categories</h3>
+                            <h3 className="text-lg font-bold text-foreground mb-4">Categories</h3>
                             <div className="space-y-1">
                                 <button
                                     onClick={() => updateFilters('category', '')}
-                                    className={`block text-left w-full px-3 py-2 rounded-lg transition-all text-sm ${!selectedCategory ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                                    className={`block text-left w-full px-3 py-2 rounded-lg transition-all text-sm ${!selectedCategory ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
                                 >
                                     All Categories
                                 </button>
@@ -198,7 +198,7 @@ const ShopClient = () => {
                                     <button
                                         key={cat._id}
                                         onClick={() => updateFilters('category', cat._id)}
-                                        className={`block text-left w-full px-3 py-2 rounded-lg transition-all text-sm ${selectedCategory === cat._id ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                                        className={`block text-left w-full px-3 py-2 rounded-lg transition-all text-sm ${selectedCategory === cat._id ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
                                     >
                                         {cat.name}
                                     </button>
@@ -207,11 +207,11 @@ const ShopClient = () => {
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-bold text-white mb-4">Brands</h3>
+                            <h3 className="text-lg font-bold text-foreground mb-4">Brands</h3>
                             <div className="space-y-1">
                                 <button
                                     onClick={() => updateFilters('brand', '')}
-                                    className={`block text-left w-full px-3 py-2 rounded-lg transition-all text-sm ${!selectedBrand ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                                    className={`block text-left w-full px-3 py-2 rounded-lg transition-all text-sm ${!selectedBrand ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
                                 >
                                     All Brands
                                 </button>
@@ -219,7 +219,7 @@ const ShopClient = () => {
                                     <button
                                         key={brand._id}
                                         onClick={() => updateFilters('brand', brand._id)}
-                                        className={`block text-left w-full px-3 py-2 rounded-lg transition-all text-sm ${selectedBrand === brand._id ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                                        className={`block text-left w-full px-3 py-2 rounded-lg transition-all text-sm ${selectedBrand === brand._id ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
                                     >
                                         {brand.name}
                                     </button>
@@ -231,9 +231,9 @@ const ShopClient = () => {
                     {/* Product Grid */}
                     <div className="flex-1">
                         {loading ? (
-                            <div className="text-center text-white py-20">Loading products...</div>
+                            <div className="text-center text-foreground py-20">Loading products...</div>
                         ) : products.length === 0 ? (
-                            <div className="text-center text-gray-500 py-20 bg-dark-800 rounded-2xl border border-white/5">
+                            <div className="text-center text-muted-foreground py-20 bg-card rounded-2xl border border-border">
                                 No products found matching these filters.
                             </div>
                         ) : (
@@ -250,7 +250,7 @@ const ShopClient = () => {
                                         <button
                                             onClick={() => updateFilters('pageNumber', String(page - 1))}
                                             disabled={page === 1}
-                                            className="px-4 py-2 bg-dark-800 text-white rounded-lg disabled:opacity-50 hover:bg-white/5 transition-colors border border-white/5"
+                                            className="px-4 py-2 bg-card text-foreground rounded-lg disabled:opacity-50 hover:bg-muted transition-colors border border-border"
                                         >
                                             Previous
                                         </button>
@@ -261,7 +261,7 @@ const ShopClient = () => {
                                                 onClick={() => updateFilters('pageNumber', String(i + 1))}
                                                 className={`w-10 h-10 rounded-lg font-medium transition-colors ${page === i + 1
                                                     ? 'bg-primary text-white'
-                                                    : 'bg-dark-800 text-gray-400 hover:text-white hover:bg-white/5 border border-white/5'
+                                                    : 'bg-card text-muted-foreground hover:text-foreground hover:bg-muted border border-border'
                                                     }`}
                                             >
                                                 {i + 1}
@@ -271,7 +271,7 @@ const ShopClient = () => {
                                         <button
                                             onClick={() => updateFilters('pageNumber', String(page + 1))}
                                             disabled={page === totalPages}
-                                            className="px-4 py-2 bg-dark-800 text-white rounded-lg disabled:opacity-50 hover:bg-white/5 transition-colors border border-white/5"
+                                            className="px-4 py-2 bg-card text-foreground rounded-lg disabled:opacity-50 hover:bg-muted transition-colors border border-border"
                                         >
                                             Next
                                         </button>

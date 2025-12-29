@@ -130,14 +130,14 @@ export default function AdminProductForm({ productId }) {
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Link
                     href="/admin"
-                    className="flex items-center text-gray-400 hover:text-white mb-8 transition-colors"
+                    className="flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors"
                 >
                     <ArrowLeft className="w-5 h-5 mr-2" />
                     Back to Dashboard
                 </Link>
 
-                <div className="bg-dark-800 rounded-2xl border border-white/5 p-8">
-                    <h1 className="text-3xl font-bold text-white mb-8">
+                <div className="bg-card rounded-2xl border border-border p-8">
+                    <h1 className="text-3xl font-bold text-foreground mb-8">
                         {isEditing ? 'Edit Product' : 'Add New Product'}
                     </h1>
 
@@ -151,25 +151,25 @@ export default function AdminProductForm({ productId }) {
                         {/* Name & Brand */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-gray-400 mb-2 text-sm font-medium">Product Name</label>
+                                <label className="block text-muted-foreground mb-2 text-sm font-medium">Product Name</label>
                                 <input
                                     type="text"
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
                                     required
-                                    className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                     placeholder="e.g. Lumix S5IIX"
                                 />
                             </div>
                             <div>
-                                <label className="block text-gray-400 mb-2 text-sm font-medium">Brand</label>
+                                <label className="block text-muted-foreground mb-2 text-sm font-medium">Brand</label>
                                 <select
                                     name="brand"
                                     value={formData.brand || ''}
                                     onChange={handleChange}
                                     required
-                                    className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                 >
                                     <option value="">Select Brand</option>
                                     {brands.map(b => (
@@ -182,7 +182,7 @@ export default function AdminProductForm({ productId }) {
                         {/* Price & Category */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-gray-400 mb-2 text-sm font-medium">Price (TND)</label>
+                                <label className="block text-muted-foreground mb-2 text-sm font-medium">Price (TND)</label>
                                 <input
                                     type="number"
                                     name="price"
@@ -190,17 +190,17 @@ export default function AdminProductForm({ productId }) {
                                     onChange={handleChange}
                                     required
                                     min="0"
-                                    className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                     placeholder="0.00"
                                 />
                             </div>
                             <div>
-                                <label className="block text-gray-400 mb-2 text-sm font-medium">Category</label>
+                                <label className="block text-muted-foreground mb-2 text-sm font-medium">Category</label>
                                 <select
                                     name="category"
                                     value={formData.category || ''}
                                     onChange={handleChange}
-                                    className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                 >
                                     <option value="">Select Category</option>
                                     {categories.map(c => (
@@ -213,7 +213,7 @@ export default function AdminProductForm({ productId }) {
                         {/* Stock & Image */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-gray-400 mb-2 text-sm font-medium">Stock Quantity</label>
+                                <label className="block text-muted-foreground mb-2 text-sm font-medium">Stock Quantity</label>
                                 <input
                                     type="number"
                                     name="inStock"
@@ -221,19 +221,19 @@ export default function AdminProductForm({ productId }) {
                                     onChange={handleChange}
                                     required
                                     min="0"
-                                    className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                     placeholder="0"
                                 />
                             </div>
                             <div>
-                                <label className="block text-gray-400 mb-2 text-sm font-medium">Image URL</label>
+                                <label className="block text-muted-foreground mb-2 text-sm font-medium">Image URL</label>
                                 <input
                                     type="url"
                                     name="imageUrl"
                                     value={formData.imageUrl}
                                     onChange={handleChange}
                                     required
-                                    className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                     placeholder="https://..."
                                 />
                             </div>
@@ -241,52 +241,52 @@ export default function AdminProductForm({ productId }) {
 
                         {/* Description */}
                         <div>
-                            <label className="block text-gray-400 mb-2 text-sm font-medium">Description</label>
+                            <label className="block text-muted-foreground mb-2 text-sm font-medium">Description</label>
                             <textarea
                                 name="description"
                                 value={formData.description}
                                 onChange={handleChange}
                                 required
                                 rows="4"
-                                className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none"
+                                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none"
                                 placeholder="Product description..."
                             />
                         </div>
 
                         {/* Specs */}
-                        <div className="border-t border-white/10 pt-6">
-                            <h3 className="text-white font-bold mb-4">Technical Specifications</h3>
+                        <div className="border-t border-border pt-6">
+                            <h3 className="text-foreground font-bold mb-4">Technical Specifications</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label className="block text-gray-400 mb-2 text-sm font-medium">Resolution</label>
+                                    <label className="block text-muted-foreground mb-2 text-sm font-medium">Resolution</label>
                                     <input
                                         type="text"
                                         name="specs.resolution"
                                         value={formData.specs?.resolution || ''}
                                         onChange={handleChange}
-                                        className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                         placeholder="e.g. 24.2MP"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-gray-400 mb-2 text-sm font-medium">Video Specs</label>
+                                    <label className="block text-muted-foreground mb-2 text-sm font-medium">Video Specs</label>
                                     <input
                                         type="text"
                                         name="specs.video"
                                         value={formData.specs?.video || ''}
                                         onChange={handleChange}
-                                        className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                         placeholder="e.g. 4K 60p"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-gray-400 mb-2 text-sm font-medium">Sensor Type</label>
+                                    <label className="block text-muted-foreground mb-2 text-sm font-medium">Sensor Type</label>
                                     <input
                                         type="text"
                                         name="specs.sensor"
                                         value={formData.specs?.sensor || ''}
                                         onChange={handleChange}
-                                        className="w-full bg-dark-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                         placeholder="e.g. Full-Frame"
                                     />
                                 </div>
