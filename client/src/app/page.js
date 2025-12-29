@@ -17,9 +17,11 @@ async function getProducts() {
   }
 }
 
+
 export default async function Home() {
   const productsData = await getProducts();
 
+  // Handle both array (legacy/old) and object (paginated) responses
   let products = [];
   if (Array.isArray(productsData)) {
     products = productsData;
