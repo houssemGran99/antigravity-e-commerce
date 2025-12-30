@@ -1,4 +1,5 @@
 import { Outfit } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { Providers } from "../providers";
 import { ThemeProvider } from "../components/ThemeProvider";
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
             <Footer />
           </ThemeProvider>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
