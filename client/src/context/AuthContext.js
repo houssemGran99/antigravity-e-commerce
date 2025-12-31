@@ -13,6 +13,28 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [wishlist, setWishlist] = useState([]);
+    const [notifications, setNotifications] = useState([]);
+
+    const fetchNotifications = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            const res = await fetch('/api/users/notifications', { // fixed endpoint path to match valid routes if needed, wait. 
+                // Step 1628 showed notificationRoutes mounted at /api/notifications? 
+                // Wait, I need to check where notificationRoutes is mounted in server/index.js.
+                // But usually it's /api/notifications or /api/users/notifications.
+                // Navbar used `/api/users/notifications/...` in lines 32 and 46.
+                // So likely it is /api/users/notifications.
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setNotifications(data);
+            }
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+        }
+    };
 
     const fetchWishlist = async () => {
         try {
@@ -44,6 +66,7 @@ export const AuthProvider = ({ children }) => {
                 } else {
                     setUser(JSON.parse(savedUser));
                     fetchWishlist();
+                    fetchNotifications();
                 }
             } catch (error) {
                 logout();
@@ -114,8 +137,15 @@ export const AuthProvider = ({ children }) => {
             });
 
             if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || errorData.error || 'Login failed');
+                const text = await res.text();
+                try {
+                    const errorData = JSON.parse(text);
+                    throw new Error(errorData.message || errorData.error || 'Login failed');
+                } catch (e) {
+                    // If parsing fails, use the raw text (truncated)
+                    console.error('Server response:', text);
+                    throw new Error(`Login failed: ${res.status} ${res.statusText}`);
+                }
             }
 
             const data = await res.json();
@@ -125,6 +155,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(data.user));
 
             fetchWishlist(); // Fetch wishlist on login
+            fetchNotifications();
 
             toast.success(`Welcome back, ${data.user.name}!`);
             return { success: true };
@@ -155,6 +186,7 @@ export const AuthProvider = ({ children }) => {
             setUser(data.user);
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
+            fetchNotifications();
 
             toast.success('Admin login successful');
             return { success: true };
@@ -165,17 +197,82 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const registerUser = async (userData) => {
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.message || 'Registration failed');
+            }
+
+            const data = await res.json();
+
+            setUser(data.user);
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            fetchNotifications();
+
+            toast.success('Registration successful!');
+            return { success: true };
+        } catch (error) {
+            console.error('Registration error:', error);
+            toast.error(error.message || 'Registration failed');
+            return { success: false, error: error.message };
+        }
+    };
+
+    const loginUser = async (email, password) => {
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.message || 'Login failed');
+            }
+
+            const data = await res.json();
+
+            setUser(data.user);
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+
+            fetchWishlist();
+            fetchNotifications();
+
+            toast.success(`Welcome back, ${data.user.name}!`);
+            return { success: true };
+        } catch (error) {
+            console.error('Login error:', error);
+            toast.error(error.message || 'Login failed');
+            return { success: false, error: error.message };
+        }
+    };
+
     const logout = () => {
         googleLogout();
         setUser(null);
         setWishlist([]); // Clear wishlist
+        setNotifications([]);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = '/';
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, loginAdmin, logout, loading, wishlist, addToWishlist, removeFromWishlist }}>
+        <AuthContext.Provider value={{ user, login, loginAdmin, loginUser, registerUser, logout, loading, wishlist, addToWishlist, removeFromWishlist, notifications, fetchNotifications }}>
             {children}
         </AuthContext.Provider>
     );

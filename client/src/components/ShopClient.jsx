@@ -82,8 +82,29 @@ const ShopClient = () => {
                     fetch('/api/categories'),
                     fetch('/api/brands')
                 ]);
-                setCategories(await catRes.json());
-                setBrands(await brandRes.json());
+
+                if (catRes.ok) {
+                    try {
+                        setCategories(await catRes.json());
+                    } catch (e) {
+                        console.error('Failed to parse categories:', e);
+                        setCategories([]);
+                    }
+                } else {
+                    console.error('Categories fetch failed:', catRes.status, await catRes.text());
+                }
+
+                if (brandRes.ok) {
+                    try {
+                        setBrands(await brandRes.json());
+                    } catch (e) {
+                        console.error('Failed to parse brands:', e);
+                        setBrands([]);
+                    }
+                } else {
+                    console.error('Brands fetch failed:', brandRes.status, await brandRes.text());
+                }
+
             } catch (error) {
                 console.error('Error fetching filters:', error);
             }

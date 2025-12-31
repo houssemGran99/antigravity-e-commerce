@@ -231,7 +231,7 @@ const ProfileContent = () => {
                                                 <User className="w-4 h-4" /> Account Type
                                             </div>
                                             <p className="text-foreground">
-                                                {!user.isAdmin ? 'Google Account' : 'Standard Account'}
+                                                {user.googleId ? 'Google Account' : 'Standard Account'}
                                             </p>
                                         </div>
 
