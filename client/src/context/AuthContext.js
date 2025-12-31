@@ -19,17 +19,16 @@ export const AuthProvider = ({ children }) => {
         try {
             const token = localStorage.getItem('token');
             if (!token) return;
-            const res = await fetch('/api/users/notifications', { // fixed endpoint path to match valid routes if needed, wait. 
-                // Step 1628 showed notificationRoutes mounted at /api/notifications? 
-                // Wait, I need to check where notificationRoutes is mounted in server/index.js.
-                // But usually it's /api/notifications or /api/users/notifications.
-                // Navbar used `/api/users/notifications/...` in lines 32 and 46.
-                // So likely it is /api/users/notifications.
+            const res = await fetch('/api/notifications', { // fixed endpoint path to match valid routes
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
                 const data = await res.json();
-                setNotifications(data);
+                if (Array.isArray(data)) {
+                    setNotifications(data);
+                } else {
+                    setNotifications([]);
+                }
             }
         } catch (error) {
             console.error('Error fetching notifications:', error);
@@ -82,12 +81,15 @@ export const AuthProvider = ({ children }) => {
                     const decoded = jwtDecode(currentToken);
                     if (decoded.exp * 1000 < Date.now()) {
                         logout();
+                    } else {
+                        // Poll for notifications while token is valid
+                        fetchNotifications();
                     }
                 } catch (error) {
                     logout();
                 }
             }
-        }, 60000); // Check every minute
+        }, 10000); // Check every 10 seconds for valid token and notifications
 
         return () => clearInterval(intervalId);
     }, []);

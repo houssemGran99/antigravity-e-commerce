@@ -58,7 +58,7 @@ const hpp = require('hpp');
 
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 100, // Limit each IP to 100 requests per 10 mins
+    max: 500, // Limit each IP to 500 requests per 10 mins
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false // Disable the `X-RateLimit-*` headers
 });
@@ -81,7 +81,7 @@ app.use(express.json());
 // app.use(hpp());
 
 // Rate Limiting
-app.use('/api', limiter);
+// app.use('/api', limiter);
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/camera_shop')

@@ -16,11 +16,12 @@ router.get('/', protect, async (req, res) => {
                     { user: null },
                     { user: { $exists: false } },
                     { user: req.user._id }
-                ]
+                ],
+                isRead: false // Only fetch unread
             };
         } else {
-            // Users only see their own
-            query = { user: req.user._id };
+            // Users only see their own unread
+            query = { user: req.user._id, isRead: false };
         }
 
         const notifications = await Notification.find(query)

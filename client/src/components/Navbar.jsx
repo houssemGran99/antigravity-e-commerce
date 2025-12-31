@@ -42,7 +42,7 @@ const Navbar = () => {
     const markAllAsRead = async () => {
         try {
             const token = localStorage.getItem('token');
-            await fetch('/api/users/notifications/read-all', {
+            await fetch('/api/notifications/read-all', {
                 method: 'PUT',
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -116,7 +116,7 @@ const Navbar = () => {
                                     {showNotifications && (
                                         <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
                                             <div className="p-3 border-b border-border flex justify-between items-center bg-muted/50">
-                                                <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
+                                                <h3 className="text-sm font-semibold text-foreground">Notifications ({notifications.length})</h3>
                                                 {unreadCount > 0 && (
                                                     <button
                                                         onClick={markAllAsRead}
@@ -136,7 +136,7 @@ const Navbar = () => {
                                                     notifications.map(notification => (
                                                         <div
                                                             key={notification._id}
-                                                            className={`p-4 border-b border-border hover:bg-muted transition-colors relative group ${!notification.isRead ? 'bg-primary/5' : ''}`}
+                                                            className={`p-4 border-b border-border hover:bg-muted transition-colors relative group ${!notification.isRead ? 'bg-zinc-200 dark:bg-blue-900 border-l-4 border-l-zinc-500' : ''}`}
                                                         >
                                                             <div className="flex gap-3">
                                                                 <div className="flex-1">
