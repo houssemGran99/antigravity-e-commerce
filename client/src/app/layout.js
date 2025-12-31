@@ -19,7 +19,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${outfit.variable} antialiased min-h-screen bg-background text-foreground font-sans`}>
+      <body
+        className={`${outfit.variable} antialiased min-h-screen bg-background text-foreground font-sans`}
+        suppressHydrationWarning
+      >
         <Providers>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <Navbar />

@@ -6,13 +6,11 @@ import { Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
-import LoginModal from '../../components/LoginModal';
 
 const CartPage = () => {
     const { cart, removeFromCart } = useContext(CartState);
     const { user } = useAuth();
     const router = useRouter();
-    const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
 
     const total = cart.reduce((acc, item) => acc + item.price, 0);
 
@@ -20,7 +18,7 @@ const CartPage = () => {
 
     const handleCheckout = () => {
         if (!user) {
-            setIsLoginModalOpen(true);
+            router.push('/login');
         } else {
             router.push('/checkout');
         }
@@ -56,10 +54,6 @@ const CartPage = () => {
 
     return (
         <div className="pt-10 pb-20 min-h-screen bg-background text-foreground">
-            <LoginModal
-                isOpen={isLoginModalOpen}
-                onClose={() => setIsLoginModalOpen(false)}
-            />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <h1 className="text-4xl font-bold mb-8">Shopping Cart</h1>
 
