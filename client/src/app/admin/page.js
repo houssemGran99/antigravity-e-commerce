@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, Edit, Trash2, Eye, Tag, Users, ShoppingBag, Layers, FileSpreadsheet, AlertTriangle, X } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, Sector } from 'recharts';
 import { utils, writeFile } from 'xlsx';
 
 const AdminDashboard = () => {
@@ -13,6 +13,54 @@ const AdminDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterCategory, setFilterCategory] = useState('');
     const [itemToDelete, setItemToDelete] = useState(null);
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const onPieEnter = (_, index) => {
+        setActiveIndex(index);
+    };
+
+    const renderActiveShape = (props) => {
+        const RADIAN = Math.PI / 180;
+        const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
+        const sin = Math.sin(-midAngle * RADIAN);
+        const cos = Math.cos(-midAngle * RADIAN);
+        const sx = cx + (outerRadius + 10) * cos;
+        const sy = cy + (outerRadius + 10) * sin;
+        const mx = cx + (outerRadius + 30) * cos;
+        const my = cy + (outerRadius + 30) * sin;
+        const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+        const ey = my;
+        const textAnchor = cos >= 0 ? 'start' : 'end';
+
+        return (
+            <g>
+                <text x={cx} y={cy} dy={-10} textAnchor="middle" fill="var(--foreground)" className="text-xl font-bold">
+                    {payload.value}
+                </text>
+                <text x={cx} y={cy} dy={20} textAnchor="middle" fill="var(--muted-foreground)" className="text-sm">
+                    {payload.name}
+                </text>
+                <Sector
+                    cx={cx}
+                    cy={cy}
+                    innerRadius={innerRadius}
+                    outerRadius={outerRadius + 6}
+                    startAngle={startAngle}
+                    endAngle={endAngle}
+                    fill={fill}
+                />
+                <Sector
+                    cx={cx}
+                    cy={cy}
+                    startAngle={startAngle}
+                    endAngle={endAngle}
+                    innerRadius={outerRadius + 8}
+                    outerRadius={outerRadius + 12}
+                    fill={fill}
+                />
+            </g>
+        );
+    };
 
     const categories = [...new Set((products || []).map(p => p.category?.name || 'Uncategorized'))].sort();
 
@@ -333,6 +381,9 @@ const AdminDashboard = () => {
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
+                                        activeIndex={activeIndex}
+                                        activeShape={renderActiveShape}
+                                        onMouseEnter={onPieEnter}
                                         data={[
                                             { name: 'Paid', value: orders.filter(o => o.isPaid && !o.isDelivered && !o.isCancelled).length },
                                             { name: 'Delivered', value: orders.filter(o => o.isDelivered).length },
@@ -345,17 +396,7 @@ const AdminDashboard = () => {
                                         outerRadius={100}
                                         paddingAngle={5}
                                         dataKey="value"
-                                        label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-                                            const RADIAN = Math.PI / 180;
-                                            const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-                                            const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                                            const y = cy + radius * Math.sin(-midAngle * RADIAN);
-                                            return percent > 0.1 ? (
-                                                <text x={x} y={y} fill="var(--foreground)" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-xs font-bold">
-                                                    {`${(percent * 100).toFixed(0)}%`}
-                                                </text>
-                                            ) : null;
-                                        }}
+                                        label={null}
                                         labelLine={false}
                                     >
                                         {[
