@@ -256,7 +256,7 @@ export default function LoginPage() {
                                         name="countryCode"
                                         value={countryCode}
                                         onChange={handleRegisterChange}
-                                        className="w-[110px] pl-10 pr-2 py-3 bg-gray-900 border border-r-0 border-gray-800 rounded-l-lg focus:outline-none focus:border-primary text-white text-sm appearance-none cursor-pointer"
+                                        className="w-[110px] pl-10 pr-2 py-3 bg-gray-900 border border-r-0 border-gray-800 rounded-l-lg focus:outline-none focus:border-primary text-white text-sm appearance-none cursor-pointer [&>option]:bg-neutral-900 [&>option]:text-white"
                                     >
                                         {countryCodes.map((c) => (
                                             <option key={c.country} value={c.code}>

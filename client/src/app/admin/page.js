@@ -442,7 +442,7 @@ const AdminDashboard = () => {
                     <select
                         value={filterCategory}
                         onChange={(e) => setFilterCategory(e.target.value)}
-                        className="bg-card border border-border rounded-xl py-3 px-4 text-foreground focus:outline-none focus:border-primary transition-colors md:w-64"
+                        className="bg-card border border-border rounded-xl py-3 px-4 text-foreground focus:outline-none focus:border-primary transition-colors md:w-64 [&>option]:bg-neutral-900 [&>option]:text-white"
                     >
                         <option value="">All Categories</option>
                         {categories.map(cat => (

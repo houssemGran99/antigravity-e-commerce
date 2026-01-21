@@ -133,7 +133,7 @@ export default function AdminCategories() {
                                     <select
                                         value={formData.parent}
                                         onChange={(e) => setFormData({ ...formData, parent: e.target.value })}
-                                        className="w-full bg-background border border-border rounded-lg px-3 py-2 text-foreground focus:outline-none focus:border-primary"
+                                        className="w-full bg-background border border-border rounded-lg px-3 py-2 text-foreground focus:outline-none focus:border-primary [&>option]:bg-neutral-900 [&>option]:text-white"
                                     >
                                         <option value="">None (Top Level)</option>
                                         {categories
