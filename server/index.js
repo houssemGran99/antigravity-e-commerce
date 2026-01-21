@@ -11,6 +11,7 @@ const cartRoutes = require('./routes/cartRoutes');
 const userRoutes = require('./routes/userRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
@@ -97,6 +98,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Health Check
 app.get('/', (req, res) => {

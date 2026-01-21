@@ -142,7 +142,7 @@ const AdminOrders = () => {
                         <select
                             value={filterPaid}
                             onChange={(e) => setFilterPaid(e.target.value)}
-                            className="bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary cursor-pointer hover:bg-muted/50 transition-colors"
+                            className="bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary cursor-pointer hover:bg-muted/50 transition-colors [&>option]:bg-neutral-900 [&>option]:text-white"
                         >
                             <option value="all">Payment: All</option>
                             <option value="paid">Paid</option>
@@ -151,7 +151,7 @@ const AdminOrders = () => {
                         <select
                             value={filterDelivered}
                             onChange={(e) => setFilterDelivered(e.target.value)}
-                            className="bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary cursor-pointer hover:bg-muted/50 transition-colors"
+                            className="bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary cursor-pointer hover:bg-muted/50 transition-colors [&>option]:bg-neutral-900 [&>option]:text-white"
                         >
                             <option value="all">Delivery: All</option>
                             <option value="delivered">Delivered</option>
@@ -160,7 +160,7 @@ const AdminOrders = () => {
                         <select
                             value={filterStatus}
                             onChange={(e) => setFilterStatus(e.target.value)}
-                            className="bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary cursor-pointer hover:bg-muted/50 transition-colors"
+                            className="bg-background border border-border rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary cursor-pointer hover:bg-muted/50 transition-colors [&>option]:bg-neutral-900 [&>option]:text-white"
                         >
                             <option value="all">Status: All</option>
                             <option value="active">Active</option>
