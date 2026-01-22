@@ -233,8 +233,7 @@ const ReviewSection = ({ productId, reviews = [], rating, numReviews }) => {
                                         <select
                                             value={userRating}
                                             onChange={(e) => setUserRating(Number(e.target.value))}
-                                            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors [&>option]:bg-neutral-900 [&>option]:text-white"
-                                        >
+                                            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary transition-colors [&>option]:bg-card [&>option]:text-foreground"                                        >
                                             <option value="1">1 - Poor</option>
                                             <option value="2">2 - Fair</option>
                                             <option value="3">3 - Good</option>

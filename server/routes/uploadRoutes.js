@@ -46,8 +46,6 @@ router.post('/', protect, admin, async (req, res) => {
         console.log('Filename:', filename);
         console.log('Content Type:', contentType);
         console.log('Data length:', data ? data.length : 'NO DATA');
-        console.log('Token exists:', !!process.env.STORE_READ_WRITE_TOKEN);
-        console.log('Token preview:', process.env.STORE_READ_WRITE_TOKEN?.substring(0, 20) + '...');
 
         if (!filename || !data) {
             console.log('ERROR: Missing filename or data');
