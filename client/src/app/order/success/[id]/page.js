@@ -48,7 +48,7 @@ const OrderSuccessContent = ({ id }) => {
                     <Link href="/shop" className="bg-primary hover:bg-blue-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 block w-full">
                         Continue Shopping
                     </Link>
-                    <Link href="/profile" className="text-muted-foreground hover:text-foreground py-2 flex items-center justify-center gap-2 transition-colors">
+                    <Link href="/orders" className="text-muted-foreground hover:text-foreground py-2 flex items-center justify-center gap-2 transition-colors">
                         View My Orders <ArrowRight className="w-4 h-4" />
                     </Link>
                 </div>

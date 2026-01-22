@@ -8,7 +8,8 @@ router.get('/', async (req, res) => {
         const categories = await Category.find({}).populate('parent', 'name');
         res.json(categories);
     } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
+        console.error('Categories fetch error:', error);
+        res.status(500).json({ message: 'Server Error', error: error.message });
     }
 });
 
